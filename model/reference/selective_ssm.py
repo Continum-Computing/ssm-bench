@@ -197,19 +197,27 @@ def selective_ssm_scan(
         Bu[k] = B_bar_all[k] @ u[k]
 
     # Sequential scan (for clarity; parallel scan used in practice)
-    x = np.zeros((seq_len, state_dim), dtype=u.dtype)
-    x_prev = x0.copy()
-
-    for k in range(seq_len):
-        x[k] = A_bar_all[k] @ x_prev + Bu[k]
-        x_prev = x[k]
+    # We compute the state trajectory: x[0], x[1], ..., x[seq_len-1]
+    # where x[0] = x0 (initial state)
+    # and x[k+1] = A_bar[k] @ x[k] + B_bar[k] @ u[k]
+    # Then y[k] = C @ x[k] + D @ u[k]
+    
+    x_all = np.zeros((seq_len, state_dim), dtype=u.dtype)
+    x_all[0] = x0.copy()
+    
+    for k in range(seq_len - 1):
+        x_all[k+1] = A_bar_all[k] @ x_all[k] + Bu[k]
 
     # Compute outputs
     y = np.zeros((seq_len, output_dim), dtype=u.dtype)
     for k in range(seq_len):
-        y[k] = C @ x[k] + D @ u[k]
+        y[k] = C @ x_all[k] + D @ u[k]
 
-    return y, x[-1]
+    # Compute final state (after processing the last input)
+    # This matches the recurrent version, which returns x after the last update
+    x_final = A_bar_all[-1] @ x_all[-1] + Bu[-1]
+
+    return y, x_final
 
 
 def compute_delta(
