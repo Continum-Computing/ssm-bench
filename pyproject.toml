@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "Proprietary"}
 authors = [
-    {name = "[OWNER NAME]", email = "[CONTACT EMAIL]"}
+    {name = "Angufibo Lincoln", email = "angufibolinc@gmail.com"}
 ]
 keywords = ["ssm", "mamba", "transformer", "benchmark", "gpu", "state-space-model"]
 classifiers = [
