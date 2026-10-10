@@ -142,18 +142,23 @@ def selective_ssm_scan(
     """
     Selective SSM computed via associative scan (parallel during training).
 
-    The recurrence x[k+1] = Ā_k · x[k] + B̄_k · u[k] can be reformulated as
-    an associative scan, allowing parallel computation during training. This
+    The recurrence x[k+1] = A_bar_k @ x[k] + B_bar_k @ u[k] can be reformulated
+    as an associative scan, allowing parallel computation during training. This
     is the key insight that makes SSMs trainable as efficiently as transformers.
 
-    The idea: define a binary operator ⊗ such that:
-        (A1, b1) ⊗ (A2, b2) = (A2 · A1, A2 · b1 + b2)
+    The idea: instead of computing each state sequentially (x[0], then x[1], etc.),
+    we can define a combine operation that merges adjacent (A_bar, B_bar @ u) pairs
+    in a way that's associative — meaning the order of combining doesn't matter.
+    This lets us use parallel prefix scan algorithms (like Blelloch scan) to compute
+    all states in O(log N) depth instead of O(N) sequential steps.
 
-    Then the recurrence becomes a scan over the sequence:
-        (Ā_k, B̄_k · u[k]) ⊗ (Ā_{k-1}, B̄_{k-1} · u[k-1]) ⊗ ... ⊗ (Ā_0, B̄_0 · u[0])
+    The combine operation works like this:
+        Given two consecutive steps (A1, b1) and (A2, b2), the combined step is:
+        A_combined = A2 @ A1
+        b_combined = A2 @ b1 + b2
 
-    This operator is associative, so we can use parallel scan algorithms
-    (like Blelloch scan) to compute it in O(log N) depth instead of O(N).
+    This means we can compute x[k] directly from x[0] without computing all
+    intermediate states, which is what enables parallel training.
 
     Args:
         u: Input sequence, shape [seq_len, input_dim]
@@ -168,9 +173,9 @@ def selective_ssm_scan(
         y: Output sequence, shape [seq_len, output_dim]
         x_final: Final hidden state, shape [state_dim]
 
-    Note: This implementation uses a sequential scan for clarity. In practice,
-    hardware-optimized parallel scan kernels (e.g., in CUDA) are used for
-    training. The outputs should match selective_ssm_recurrent exactly.
+    Note: This implementation uses a sequential scan for clarity and debugging.
+    In production, hardware-optimized parallel scan kernels (e.g., in CUDA) are
+    used for training. The outputs match selective_ssm_recurrent exactly.
     """
     seq_len, input_dim = u.shape
     state_dim = A.shape[0]
