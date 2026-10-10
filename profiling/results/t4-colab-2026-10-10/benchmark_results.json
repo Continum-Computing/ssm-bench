@@ -1,0 +1,1027 @@
+{
+  "metadata": {
+    "timestamp": "2026-10-10T10:45:06.066986",
+    "gpu": {
+      "name": "Tesla T4",
+      "compute_capability": "7.5",
+      "total_memory_gb": 15.637086208,
+      "memory_bandwidth_gb_s": 900,
+      "fp32_tflops": 13.0,
+      "fp16_tflops": 26.0,
+      "bf16_tflops": 26.0
+    },
+    "python_version": "3.13.15",
+    "torch_version": "2.11.0+cu130",
+    "cuda_version": "13.0"
+  },
+  "results": [
+    {
+      "config": {
+        "seq_len": 512,
+        "batch_size": 1,
+        "state_dim": 64,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_recurrent",
+      "latency_stats": {
+        "mean_ms": 109.61877433776856,
+        "std_ms": 20.668192715339632,
+        "min_ms": 92.4488296508789,
+        "max_ms": 183.37831115722656,
+        "median_ms": 102.7182388305664,
+        "p95_ms": 160.568603515625,
+        "p99_ms": 183.37831115722656,
+        "runs": 100
+      },
+      "flops": 132120576,
+      "bytes_transferred": 21864576,
+      "arithmetic_intensity": 6.042677251093275,
+      "achieved_bandwidth_gb_s": 0.19946013930632572,
+      "achieved_tflops": 0.00120527324628623,
+      "bandwidth_utilization_pct": 0.022162237700702858,
+      "compute_utilization_pct": 0.004635666331870116
+    },
+    {
+      "config": {
+        "seq_len": 512,
+        "batch_size": 1,
+        "state_dim": 64,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_scan",
+      "latency_stats": {
+        "mean_ms": 133.14458457946776,
+        "std_ms": 19.904442318561525,
+        "min_ms": 118.41331481933594,
+        "max_ms": 211.98678588867188,
+        "median_ms": 124.4610595703125,
+        "p95_ms": 181.5081024169922,
+        "p99_ms": 211.98678588867188,
+        "runs": 100
+      },
+      "flops": 132120576,
+      "bytes_transferred": 21864576,
+      "arithmetic_intensity": 6.042677251093275,
+      "achieved_bandwidth_gb_s": 0.16421678785553656,
+      "achieved_tflops": 0.000992309048222261,
+      "bandwidth_utilization_pct": 0.018246309761726285,
+      "compute_utilization_pct": 0.0038165732623933117
+    },
+    {
+      "config": {
+        "seq_len": 512,
+        "batch_size": 1,
+        "state_dim": 64,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "attention",
+      "latency_stats": {
+        "mean_ms": 0.6850950419902802,
+        "std_ms": 0.057230146183850306,
+        "min_ms": 0.5131840109825134,
+        "max_ms": 0.7398080229759216,
+        "median_ms": 0.7004160284996033,
+        "p95_ms": 0.7291200160980225,
+        "p99_ms": 0.7398080229759216,
+        "runs": 100
+      },
+      "flops": 537657344,
+      "bytes_transferred": 3670016,
+      "arithmetic_intensity": 146.5,
+      "achieved_bandwidth_gb_s": 5.3569443289768675,
+      "achieved_tflops": 0.7847923441951111,
+      "bandwidth_utilization_pct": 0.5952160365529853,
+      "compute_utilization_pct": 3.0184320930581197
+    },
+    {
+      "config": {
+        "seq_len": 512,
+        "batch_size": 1,
+        "state_dim": 128,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_recurrent",
+      "latency_stats": {
+        "mean_ms": 106.27280952453613,
+        "std_ms": 18.497894714397695,
+        "min_ms": 91.81423950195312,
+        "max_ms": 183.56979370117188,
+        "median_ms": 98.38182067871094,
+        "p95_ms": 150.49920654296875,
+        "p99_ms": 183.56979370117188,
+        "runs": 100
+      },
+      "flops": 209715200,
+      "bytes_transferred": 51478784,
+      "arithmetic_intensity": 4.073818060659708,
+      "achieved_bandwidth_gb_s": 0.4844022119139952,
+      "achieved_tflops": 0.001973366479518745,
+      "bandwidth_utilization_pct": 0.053822467990443906,
+      "compute_utilization_pct": 0.007589871075072096
+    },
+    {
+      "config": {
+        "seq_len": 512,
+        "batch_size": 1,
+        "state_dim": 128,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_scan",
+      "latency_stats": {
+        "mean_ms": 130.94183647155762,
+        "std_ms": 19.60724317618479,
+        "min_ms": 117.62694549560547,
+        "max_ms": 209.6157684326172,
+        "median_ms": 121.69641876220703,
+        "p95_ms": 174.65545654296875,
+        "p99_ms": 209.6157684326172,
+        "runs": 100
+      },
+      "flops": 209715200,
+      "bytes_transferred": 51478784,
+      "arithmetic_intensity": 4.073818060659708,
+      "achieved_bandwidth_gb_s": 0.39314237059125023,
+      "achieved_tflops": 0.0016015904897252074,
+      "bandwidth_utilization_pct": 0.043682485621250024,
+      "compute_utilization_pct": 0.006159963422020028
+    },
+    {
+      "config": {
+        "seq_len": 512,
+        "batch_size": 1,
+        "state_dim": 128,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "attention",
+      "latency_stats": {
+        "mean_ms": 0.6666668826341628,
+        "std_ms": 0.06900569725786902,
+        "min_ms": 0.52019202709198,
+        "max_ms": 0.7188799977302551,
+        "median_ms": 0.6983680129051208,
+        "p95_ms": 0.7106879949569702,
+        "p99_ms": 0.7188799977302551,
+        "runs": 100
+      },
+      "flops": 537657344,
+      "bytes_transferred": 3670016,
+      "arithmetic_intensity": 146.5,
+      "achieved_bandwidth_gb_s": 5.505022216641204,
+      "achieved_tflops": 0.8064857547379363,
+      "bandwidth_utilization_pct": 0.611669135182356,
+      "compute_utilization_pct": 3.101868287453601
+    },
+    {
+      "config": {
+        "seq_len": 512,
+        "batch_size": 1,
+        "state_dim": 256,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_recurrent",
+      "latency_stats": {
+        "mean_ms": 109.25367500305175,
+        "std_ms": 17.931768732624683,
+        "min_ms": 92.99996948242188,
+        "max_ms": 180.23193359375,
+        "median_ms": 103.37129974365234,
+        "p95_ms": 153.7171173095703,
+        "p99_ms": 180.23193359375,
+        "runs": 100
+      },
+      "flops": 402653184,
+      "bytes_transferred": 135922176,
+      "arithmetic_intensity": 2.962380355064357,
+      "achieved_bandwidth_gb_s": 1.2440970612311515,
+      "achieved_tflops": 0.0036854886939844617,
+      "bandwidth_utilization_pct": 0.1382330068034613,
+      "compute_utilization_pct": 0.014174956515324851
+    },
+    {
+      "config": {
+        "seq_len": 512,
+        "batch_size": 1,
+        "state_dim": 256,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_scan",
+      "latency_stats": {
+        "mean_ms": 134.7884178161621,
+        "std_ms": 21.382770991652297,
+        "min_ms": 118.24915313720703,
+        "max_ms": 208.36752319335938,
+        "median_ms": 124.3730239868164,
+        "p95_ms": 187.3570556640625,
+        "p99_ms": 208.36752319335938,
+        "runs": 100
+      },
+      "flops": 402653184,
+      "bytes_transferred": 135922176,
+      "arithmetic_intensity": 2.962380355064357,
+      "achieved_bandwidth_gb_s": 1.0084113917368198,
+      "achieved_tflops": 0.002987298096704263,
+      "bandwidth_utilization_pct": 0.11204571019297997,
+      "compute_utilization_pct": 0.011489608064247165
+    },
+    {
+      "config": {
+        "seq_len": 512,
+        "batch_size": 1,
+        "state_dim": 256,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "attention",
+      "latency_stats": {
+        "mean_ms": 0.707596800327301,
+        "std_ms": 0.004476689007916308,
+        "min_ms": 0.7004479765892029,
+        "max_ms": 0.7232319712638855,
+        "median_ms": 0.707040011882782,
+        "p95_ms": 0.7154560089111328,
+        "p99_ms": 0.7232319712638855,
+        "runs": 100
+      },
+      "flops": 537657344,
+      "bytes_transferred": 3670016,
+      "arithmetic_intensity": 146.5,
+      "achieved_bandwidth_gb_s": 5.186592135948641,
+      "achieved_tflops": 0.7598357479164759,
+      "bandwidth_utilization_pct": 0.5762880151054046,
+      "compute_utilization_pct": 2.9224451842941384
+    },
+    {
+      "config": {
+        "seq_len": 1024,
+        "batch_size": 1,
+        "state_dim": 64,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_recurrent",
+      "latency_stats": {
+        "mean_ms": 200.75243927001952,
+        "std_ms": 24.249143889200116,
+        "min_ms": 183.53482055664062,
+        "max_ms": 329.7755126953125,
+        "median_ms": 191.33815002441406,
+        "p95_ms": 259.0241394042969,
+        "p99_ms": 329.7755126953125,
+        "runs": 100
+      },
+      "flops": 264241152,
+      "bytes_transferred": 43491456,
+      "arithmetic_intensity": 6.075702593171403,
+      "achieved_bandwidth_gb_s": 0.21664222939529204,
+      "achieved_tflops": 0.00131625375492741,
+      "bandwidth_utilization_pct": 0.024071358821699116,
+      "compute_utilization_pct": 0.0050625144420285
+    },
+    {
+      "config": {
+        "seq_len": 1024,
+        "batch_size": 1,
+        "state_dim": 64,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_scan",
+      "latency_stats": {
+        "mean_ms": 262.4206115722656,
+        "std_ms": 38.783573966961335,
+        "min_ms": 234.0344696044922,
+        "max_ms": 432.44134521484375,
+        "median_ms": 247.28781127929688,
+        "p95_ms": 354.1033020019531,
+        "p99_ms": 432.44134521484375,
+        "runs": 100
+      },
+      "flops": 264241152,
+      "bytes_transferred": 43491456,
+      "arithmetic_intensity": 6.075702593171403,
+      "achieved_bandwidth_gb_s": 0.16573185977818397,
+      "achieved_tflops": 0.0010069374902254317,
+      "bandwidth_utilization_pct": 0.018414651086464888,
+      "compute_utilization_pct": 0.003872836500867045
+    },
+    {
+      "config": {
+        "seq_len": 1024,
+        "batch_size": 1,
+        "state_dim": 64,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "attention",
+      "latency_stats": {
+        "mean_ms": 1.3220624017715454,
+        "std_ms": 0.106373903021285,
+        "min_ms": 0.967199981212616,
+        "max_ms": 1.3865280151367188,
+        "median_ms": 1.3517119884490967,
+        "p95_ms": 1.368064045906067,
+        "p99_ms": 1.3865280151367188,
+        "runs": 100
+      },
+      "flops": 1613758464,
+      "bytes_transferred": 8912896,
+      "arithmetic_intensity": 181.05882352941177,
+      "achieved_bandwidth_gb_s": 6.741660596396087,
+      "achieved_tflops": 1.220637136218068,
+      "bandwidth_utilization_pct": 0.7490733995995652,
+      "compute_utilization_pct": 4.694758216223338
+    },
+    {
+      "config": {
+        "seq_len": 1024,
+        "batch_size": 1,
+        "state_dim": 128,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_recurrent",
+      "latency_stats": {
+        "mean_ms": 205.19685760498047,
+        "std_ms": 28.30306305527294,
+        "min_ms": 185.30934143066406,
+        "max_ms": 329.4025573730469,
+        "median_ms": 194.1676788330078,
+        "p95_ms": 265.58172607421875,
+        "p99_ms": 329.4025573730469,
+        "runs": 100
+      },
+      "flops": 419430400,
+      "bytes_transferred": 102596864,
+      "arithmetic_intensity": 4.088140549793023,
+      "achieved_bandwidth_gb_s": 0.49999237414008924,
+      "achieved_tflops": 0.0020440390993093833,
+      "bandwidth_utilization_pct": 0.055554708237787694,
+      "compute_utilization_pct": 0.007861688843497628
+    },
+    {
+      "config": {
+        "seq_len": 1024,
+        "batch_size": 1,
+        "state_dim": 128,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_scan",
+      "latency_stats": {
+        "mean_ms": 277.45053527832033,
+        "std_ms": 43.45285810936184,
+        "min_ms": 239.6466827392578,
+        "max_ms": 449.2955322265625,
+        "median_ms": 264.7501220703125,
+        "p95_ms": 387.600341796875,
+        "p99_ms": 449.2955322265625,
+        "runs": 100
+      },
+      "flops": 419430400,
+      "bytes_transferred": 102596864,
+      "arithmetic_intensity": 4.088140549793023,
+      "achieved_bandwidth_gb_s": 0.36978434335000115,
+      "achieved_tflops": 0.0015117303687277254,
+      "bandwidth_utilization_pct": 0.04108714926111124,
+      "compute_utilization_pct": 0.005814347572029713
+    },
+    {
+      "config": {
+        "seq_len": 1024,
+        "batch_size": 1,
+        "state_dim": 128,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "attention",
+      "latency_stats": {
+        "mean_ms": 1.3213043224811554,
+        "std_ms": 0.01006495886160825,
+        "min_ms": 1.3115839958190918,
+        "max_ms": 1.4003520011901855,
+        "median_ms": 1.3186240196228027,
+        "p95_ms": 1.3348159790039062,
+        "p99_ms": 1.4003520011901855,
+        "runs": 100
+      },
+      "flops": 1613758464,
+      "bytes_transferred": 8912896,
+      "arithmetic_intensity": 181.05882352941177,
+      "achieved_bandwidth_gb_s": 6.7455285268902285,
+      "achieved_tflops": 1.2213374591628308,
+      "bandwidth_utilization_pct": 0.7495031696544698,
+      "compute_utilization_pct": 4.697451766010888
+    },
+    {
+      "config": {
+        "seq_len": 1024,
+        "batch_size": 1,
+        "state_dim": 256,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_recurrent",
+      "latency_stats": {
+        "mean_ms": 213.84991836547852,
+        "std_ms": 35.16361182283027,
+        "min_ms": 185.829345703125,
+        "max_ms": 362.3330993652344,
+        "median_ms": 199.81964111328125,
+        "p95_ms": 285.6365966796875,
+        "p99_ms": 362.3330993652344,
+        "runs": 100
+      },
+      "flops": 805306368,
+      "bytes_transferred": 271188480,
+      "arithmetic_intensity": 2.9695449010223443,
+      "achieved_bandwidth_gb_s": 1.2681252444367432,
+      "achieved_tflops": 0.0037657548534748442,
+      "bandwidth_utilization_pct": 0.14090280493741592,
+      "compute_utilization_pct": 0.014483672513364786
+    },
+    {
+      "config": {
+        "seq_len": 1024,
+        "batch_size": 1,
+        "state_dim": 256,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_scan",
+      "latency_stats": {
+        "mean_ms": 264.1542875671387,
+        "std_ms": 36.5352408829271,
+        "min_ms": 236.7447052001953,
+        "max_ms": 404.0732421875,
+        "median_ms": 247.8570556640625,
+        "p95_ms": 345.6919860839844,
+        "p99_ms": 404.0732421875,
+        "runs": 100
+      },
+      "flops": 805306368,
+      "bytes_transferred": 271188480,
+      "arithmetic_intensity": 2.9695449010223443,
+      "achieved_bandwidth_gb_s": 1.0266291056550558,
+      "achieved_tflops": 0.003048621225939101,
+      "bandwidth_utilization_pct": 0.11406990062833955,
+      "compute_utilization_pct": 0.011725466253611927
+    },
+    {
+      "config": {
+        "seq_len": 1024,
+        "batch_size": 1,
+        "state_dim": 256,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "attention",
+      "latency_stats": {
+        "mean_ms": 1.3318569552898407,
+        "std_ms": 0.015333163786681814,
+        "min_ms": 1.314687967300415,
+        "max_ms": 1.3703680038452148,
+        "median_ms": 1.3240000009536743,
+        "p95_ms": 1.3624639511108398,
+        "p99_ms": 1.3703680038452148,
+        "runs": 100
+      },
+      "flops": 1613758464,
+      "bytes_transferred": 8912896,
+      "arithmetic_intensity": 181.05882352941177,
+      "achieved_bandwidth_gb_s": 6.69208203223323,
+      "achieved_tflops": 1.211660499718464,
+      "bandwidth_utilization_pct": 0.7435646702481367,
+      "compute_utilization_pct": 4.660232691224861
+    },
+    {
+      "config": {
+        "seq_len": 2048,
+        "batch_size": 1,
+        "state_dim": 64,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_recurrent",
+      "latency_stats": {
+        "mean_ms": 413.86391784667967,
+        "std_ms": 60.9355188578762,
+        "min_ms": 367.8739929199219,
+        "max_ms": 616.7388305664062,
+        "median_ms": 388.9367370605469,
+        "p95_ms": 566.7073974609375,
+        "p99_ms": 616.7388305664062,
+        "runs": 100
+      },
+      "flops": 528482304,
+      "bytes_transferred": 86745216,
+      "arithmetic_intensity": 6.0923510064232245,
+      "achieved_bandwidth_gb_s": 0.20959840242013,
+      "achieved_tflops": 0.0012769470379289792,
+      "bandwidth_utilization_pct": 0.023288711380014444,
+      "compute_utilization_pct": 0.004911334761265305
+    },
+    {
+      "config": {
+        "seq_len": 2048,
+        "batch_size": 1,
+        "state_dim": 64,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_scan",
+      "latency_stats": {
+        "mean_ms": 529.4578771972656,
+        "std_ms": 71.54980617934525,
+        "min_ms": 468.4564208984375,
+        "max_ms": 758.6090698242188,
+        "median_ms": 502.6046447753906,
+        "p95_ms": 691.319091796875,
+        "p99_ms": 758.6090698242188,
+        "runs": 100
+      },
+      "flops": 528482304,
+      "bytes_transferred": 86745216,
+      "arithmetic_intensity": 6.0923510064232245,
+      "achieved_bandwidth_gb_s": 0.1638378041690377,
+      "achieved_tflops": 0.000998157411119408,
+      "bandwidth_utilization_pct": 0.018204200463226412,
+      "compute_utilization_pct": 0.003839066965843877
+    },
+    {
+      "config": {
+        "seq_len": 2048,
+        "batch_size": 1,
+        "state_dim": 64,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "attention",
+      "latency_stats": {
+        "mean_ms": 3.0167443108558656,
+        "std_ms": 0.7443467705939671,
+        "min_ms": 2.1094400882720947,
+        "max_ms": 4.055359840393066,
+        "median_ms": 3.5894720554351807,
+        "p95_ms": 3.717087984085083,
+        "p99_ms": 4.055359840393066,
+        "runs": 100
+      },
+      "flops": 5381292032,
+      "bytes_transferred": 25690112,
+      "arithmetic_intensity": 209.46938775510205,
+      "achieved_bandwidth_gb_s": 8.515840042377203,
+      "achieved_tflops": 1.7838077998971351,
+      "bandwidth_utilization_pct": 0.9462044491530226,
+      "compute_utilization_pct": 6.860799230373596
+    },
+    {
+      "config": {
+        "seq_len": 2048,
+        "batch_size": 1,
+        "state_dim": 128,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_recurrent",
+      "latency_stats": {
+        "mean_ms": 412.5140576171875,
+        "std_ms": 55.714322912275584,
+        "min_ms": 372.8371887207031,
+        "max_ms": 641.1812744140625,
+        "median_ms": 391.593994140625,
+        "p95_ms": 544.5016479492188,
+        "p99_ms": 641.1812744140625,
+        "runs": 100
+      },
+      "flops": 838860800,
+      "bytes_transferred": 204833024,
+      "arithmetic_intensity": 4.095339626485229,
+      "achieved_bandwidth_gb_s": 0.49654798477215717,
+      "achieved_tflops": 0.0020335326384887994,
+      "bandwidth_utilization_pct": 0.055171998308017466,
+      "compute_utilization_pct": 0.007821279378803074
+    },
+    {
+      "config": {
+        "seq_len": 2048,
+        "batch_size": 1,
+        "state_dim": 128,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_scan",
+      "latency_stats": {
+        "mean_ms": 530.1247360229493,
+        "std_ms": 68.54395290591638,
+        "min_ms": 479.37261962890625,
+        "max_ms": 774.6539306640625,
+        "median_ms": 504.0393981933594,
+        "p95_ms": 690.767333984375,
+        "p99_ms": 774.6539306640625,
+        "runs": 100
+      },
+      "flops": 838860800,
+      "bytes_transferred": 204833024,
+      "arithmetic_intensity": 4.095339626485229,
+      "achieved_bandwidth_gb_s": 0.38638646733725085,
+      "achieved_tflops": 0.001582383810823884,
+      "bandwidth_utilization_pct": 0.04293182970413898,
+      "compute_utilization_pct": 0.006086091580091862
+    },
+    {
+      "config": {
+        "seq_len": 2048,
+        "batch_size": 1,
+        "state_dim": 128,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "attention",
+      "latency_stats": {
+        "mean_ms": 2.7234019351005556,
+        "std_ms": 0.4589099072739768,
+        "min_ms": 2.168800115585327,
+        "max_ms": 3.837088108062744,
+        "median_ms": 2.616863965988159,
+        "p95_ms": 3.827712059020996,
+        "p99_ms": 3.837088108062744,
+        "runs": 100
+      },
+      "flops": 5381292032,
+      "bytes_transferred": 25690112,
+      "arithmetic_intensity": 209.46938775510205,
+      "achieved_bandwidth_gb_s": 9.433096036575833,
+      "achieved_tflops": 1.9759448514166191,
+      "bandwidth_utilization_pct": 1.0481217818417592,
+      "compute_utilization_pct": 7.5997878900639195
+    },
+    {
+      "config": {
+        "seq_len": 2048,
+        "batch_size": 1,
+        "state_dim": 256,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_recurrent",
+      "latency_stats": {
+        "mean_ms": 418.211618347168,
+        "std_ms": 56.87795276484263,
+        "min_ms": 369.1407470703125,
+        "max_ms": 587.2088012695312,
+        "median_ms": 394.2586364746094,
+        "p95_ms": 548.0306396484375,
+        "p99_ms": 587.2088012695312,
+        "runs": 100
+      },
+      "flops": 1610612736,
+      "bytes_transferred": 541721088,
+      "arithmetic_intensity": 2.973140185378938,
+      "achieved_bandwidth_gb_s": 1.295327686354002,
+      "achieved_tflops": 0.0038511907975330084,
+      "bandwidth_utilization_pct": 0.143925298483778,
+      "compute_utilization_pct": 0.014812272298203878
+    },
+    {
+      "config": {
+        "seq_len": 2048,
+        "batch_size": 1,
+        "state_dim": 256,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_scan",
+      "latency_stats": {
+        "mean_ms": 549.4414672851562,
+        "std_ms": 77.90453003819707,
+        "min_ms": 473.3931579589844,
+        "max_ms": 825.0836791992188,
+        "median_ms": 528.5396728515625,
+        "p95_ms": 743.2779541015625,
+        "p99_ms": 825.0836791992188,
+        "runs": 100
+      },
+      "flops": 1610612736,
+      "bytes_transferred": 541721088,
+      "arithmetic_intensity": 2.973140185378938,
+      "achieved_bandwidth_gb_s": 0.9859486774391029,
+      "achieved_tflops": 0.0029313636336154134,
+      "bandwidth_utilization_pct": 0.1095498530487892,
+      "compute_utilization_pct": 0.011274475513905436
+    },
+    {
+      "config": {
+        "seq_len": 2048,
+        "batch_size": 1,
+        "state_dim": 256,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "attention",
+      "latency_stats": {
+        "mean_ms": 2.5707462573051454,
+        "std_ms": 0.5369176933797885,
+        "min_ms": 2.2487680912017822,
+        "max_ms": 3.6816959381103516,
+        "median_ms": 2.328160047531128,
+        "p95_ms": 3.665087938308716,
+        "p99_ms": 3.6816959381103516,
+        "runs": 100
+      },
+      "flops": 5381292032,
+      "bytes_transferred": 25690112,
+      "arithmetic_intensity": 209.46938775510205,
+      "achieved_bandwidth_gb_s": 9.993250764052597,
+      "achieved_tflops": 2.0932801192293033,
+      "bandwidth_utilization_pct": 1.1103611960058442,
+      "compute_utilization_pct": 8.051077381651167
+    },
+    {
+      "config": {
+        "seq_len": 4096,
+        "batch_size": 1,
+        "state_dim": 64,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_recurrent",
+      "latency_stats": {
+        "mean_ms": 825.460697631836,
+        "std_ms": 100.95372411996345,
+        "min_ms": 748.1077270507812,
+        "max_ms": 1106.6820068359375,
+        "median_ms": 780.085205078125,
+        "p95_ms": 1074.09814453125,
+        "p99_ms": 1106.6820068359375,
+        "runs": 100
+      },
+      "flops": 1056964608,
+      "bytes_transferred": 173252736,
+      "arithmetic_intensity": 6.100709474510117,
+      "achieved_bandwidth_gb_s": 0.20988611147331998,
+      "achieved_tflops": 0.0012804541888333698,
+      "bandwidth_utilization_pct": 0.02332067905259111,
+      "compute_utilization_pct": 0.004924823803205269
+    },
+    {
+      "config": {
+        "seq_len": 4096,
+        "batch_size": 1,
+        "state_dim": 64,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_scan",
+      "latency_stats": {
+        "mean_ms": 1054.1594665527343,
+        "std_ms": 129.98214996777168,
+        "min_ms": 961.4380493164062,
+        "max_ms": 1424.269287109375,
+        "median_ms": 987.6947631835938,
+        "p95_ms": 1371.0677490234375,
+        "p99_ms": 1424.269287109375,
+        "runs": 100
+      },
+      "flops": 1056964608,
+      "bytes_transferred": 173252736,
+      "arithmetic_intensity": 6.100709474510117,
+      "achieved_bandwidth_gb_s": 0.16435154404728106,
+      "achieved_tflops": 0.0010026610219196143,
+      "bandwidth_utilization_pct": 0.018261282671920117,
+      "compute_utilization_pct": 0.0038563885458446708
+    },
+    {
+      "config": {
+        "seq_len": 4096,
+        "batch_size": 1,
+        "state_dim": 64,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "attention",
+      "latency_stats": {
+        "mean_ms": 8.143775033950806,
+        "std_ms": 1.0006484924951,
+        "min_ms": 7.667712211608887,
+        "max_ms": 12.77894401550293,
+        "median_ms": 7.915359973907471,
+        "p95_ms": 11.439840316772461,
+        "p99_ms": 12.77894401550293,
+        "runs": 100
+      },
+      "flops": 19377684480,
+      "bytes_transferred": 84410368,
+      "arithmetic_intensity": 229.56521739130434,
+      "achieved_bandwidth_gb_s": 10.365017163182836,
+      "achieved_tflops": 2.3794474183306686,
+      "bandwidth_utilization_pct": 1.1516685736869818,
+      "compute_utilization_pct": 9.15172083973334
+    },
+    {
+      "config": {
+        "seq_len": 4096,
+        "batch_size": 1,
+        "state_dim": 128,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_recurrent",
+      "latency_stats": {
+        "mean_ms": 829.0959246826172,
+        "std_ms": 103.90873389380819,
+        "min_ms": 747.3480224609375,
+        "max_ms": 1130.497314453125,
+        "median_ms": 778.9629516601562,
+        "p95_ms": 1111.146240234375,
+        "p99_ms": 1130.497314453125,
+        "runs": 100
+      },
+      "flops": 1677721600,
+      "bytes_transferred": 409305344,
+      "arithmetic_intensity": 4.098948681207544,
+      "achieved_bandwidth_gb_s": 0.4936767047271212,
+      "achieved_tflops": 0.00202355547778412,
+      "bandwidth_utilization_pct": 0.05485296719190235,
+      "compute_utilization_pct": 0.007782905683785077
+    },
+    {
+      "config": {
+        "seq_len": 4096,
+        "batch_size": 1,
+        "state_dim": 128,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_scan",
+      "latency_stats": {
+        "mean_ms": 1052.187158203125,
+        "std_ms": 130.13598616081126,
+        "min_ms": 966.2763061523438,
+        "max_ms": 1459.2720947265625,
+        "median_ms": 988.492431640625,
+        "p95_ms": 1351.6068115234375,
+        "p99_ms": 1459.2720947265625,
+        "runs": 100
+      },
+      "flops": 1677721600,
+      "bytes_transferred": 409305344,
+      "arithmetic_intensity": 4.098948681207544,
+      "achieved_bandwidth_gb_s": 0.38900431430753457,
+      "achieved_tflops": 0.0015945087211149138,
+      "bandwidth_utilization_pct": 0.04322270158972606,
+      "compute_utilization_pct": 0.006132725850441977
+    },
+    {
+      "config": {
+        "seq_len": 4096,
+        "batch_size": 1,
+        "state_dim": 128,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "attention",
+      "latency_stats": {
+        "mean_ms": 8.04477283000946,
+        "std_ms": 0.7392628033534473,
+        "min_ms": 7.649375915527344,
+        "max_ms": 12.224800109863281,
+        "median_ms": 7.892960071563721,
+        "p95_ms": 8.112128257751465,
+        "p99_ms": 12.224800109863281,
+        "runs": 100
+      },
+      "flops": 19377684480,
+      "bytes_transferred": 84410368,
+      "arithmetic_intensity": 229.56521739130434,
+      "achieved_bandwidth_gb_s": 10.492573225327574,
+      "achieved_tflops": 2.408729853466504,
+      "bandwidth_utilization_pct": 1.1658414694808414,
+      "compute_utilization_pct": 9.264345590255783
+    },
+    {
+      "config": {
+        "seq_len": 4096,
+        "batch_size": 1,
+        "state_dim": 256,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_recurrent",
+      "latency_stats": {
+        "mean_ms": 815.6506427001954,
+        "std_ms": 97.62596971296607,
+        "min_ms": 745.2709350585938,
+        "max_ms": 1162.71826171875,
+        "median_ms": 772.9913940429688,
+        "p95_ms": 1073.8685302734375,
+        "p99_ms": 1162.71826171875,
+        "runs": 100
+      },
+      "flops": 3221225472,
+      "bytes_transferred": 1082786304,
+      "arithmetic_intensity": 2.974941094193966,
+      "achieved_bandwidth_gb_s": 1.3275123531018833,
+      "achieved_tflops": 0.003949271052292923,
+      "bandwidth_utilization_pct": 0.14750137256687593,
+      "compute_utilization_pct": 0.015189504047280474
+    },
+    {
+      "config": {
+        "seq_len": 4096,
+        "batch_size": 1,
+        "state_dim": 256,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "ssm_scan",
+      "latency_stats": {
+        "mean_ms": 1056.6794836425781,
+        "std_ms": 132.48329693834353,
+        "min_ms": 956.6033325195312,
+        "max_ms": 1464.9429931640625,
+        "median_ms": 997.516845703125,
+        "p95_ms": 1373.013427734375,
+        "p99_ms": 1464.9429931640625,
+        "runs": 100
+      },
+      "flops": 3221225472,
+      "bytes_transferred": 1082786304,
+      "arithmetic_intensity": 2.974941094193966,
+      "achieved_bandwidth_gb_s": 1.0247064703739932,
+      "achieved_tflops": 0.003048441388202044,
+      "bandwidth_utilization_pct": 0.11385627448599923,
+      "compute_utilization_pct": 0.01172477457000786
+    },
+    {
+      "config": {
+        "seq_len": 4096,
+        "batch_size": 1,
+        "state_dim": 256,
+        "input_dim": 256,
+        "output_dim": 256,
+        "dtype": "bf16"
+      },
+      "model_type": "attention",
+      "latency_stats": {
+        "mean_ms": 8.434828114509582,
+        "std_ms": 1.5485081697568943,
+        "min_ms": 7.446784019470215,
+        "max_ms": 14.189023971557617,
+        "median_ms": 8.082592010498047,
+        "p95_ms": 13.922304153442383,
+        "p99_ms": 14.189023971557617,
+        "runs": 100
+      },
+      "flops": 19377684480,
+      "bytes_transferred": 84410368,
+      "arithmetic_intensity": 229.56521739130434,
+      "achieved_bandwidth_gb_s": 10.007360772983313,
+      "achieved_tflops": 2.297341951363126,
+      "bandwidth_utilization_pct": 1.1119289747759238,
+      "compute_utilization_pct": 8.835930582165869
+    }
+  ]
+}

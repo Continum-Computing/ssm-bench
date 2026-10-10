@@ -1,0 +1,45 @@
+{
+  "version": "1.0",
+  "description": "Index of all benchmark result sets for the GPU-SSM mismatch study",
+  "project": "ssm-bench",
+  "hypothesis": "GPUs don't convert SSM arithmetic savings into proportional speed/energy gains because they're physically built for dense matmul, not sequential recurrence",
+  "result_sets": [
+    {
+      "run_id": "t4-colab-2026-10-10",
+      "gpu": "Tesla T4",
+      "platform": "Google Colab",
+      "date": "2026-10-10",
+      "configurations": 36,
+      "path": "t4-colab-2026-10-10/",
+      "key_findings": "SSM 100-200x slower than attention, <0.2% bandwidth utilization",
+      "files": {
+        "metadata": "metadata.json",
+        "raw_data": "benchmark_results.json",
+        "summary": "benchmark_summary.txt",
+        "plots": [
+          "plots/latency_vs_seq_len.png",
+          "plots/bandwidth_utilization.png",
+          "plots/compute_utilization.png",
+          "plots/roofline_model.png"
+        ]
+      }
+    },
+    {
+      "run_id": "a100-modal-2026-10-10",
+      "gpu": "NVIDIA A100-SXM4-40GB",
+      "platform": "Modal",
+      "date": "2026-10-10",
+      "configurations": 36,
+      "path": "a100-modal-2026-10-10/",
+      "key_findings": "SSM gap widens on A100 — 1000-1500x slower, <0.1% bandwidth utilization",
+      "files": {
+        "metadata": "metadata.json",
+        "raw_data": "benchmark_results.json"
+      }
+    }
+  ],
+  "analysis": {
+    "cross_gpu_comparison": "analysis/gpu_comparison_t4_vs_a100.md"
+  },
+  "conclusion": "The GPU-SSM mismatch hypothesis is strongly confirmed on both T4 and A100. The performance gap widens on higher-end hardware, indicating a fundamental architectural mismatch that justifies custom SSM accelerator design (Kalman project)."
+}

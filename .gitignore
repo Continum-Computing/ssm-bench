@@ -31,12 +31,10 @@ htmlcov/
 .DS_Store
 Thumbs.db
 
-# Profiling results (keep directory structure, ignore data files)
-profiling/results/*.json
-profiling/results/*.csv
-profiling/results/*.png
-profiling/results/*.pdf
-!profiling/results/.gitkeep
+# Profiling results — track organized results, ignore temporary files
+profiling/results/*.tmp
+profiling/results/*.log
+profiling/results/*-scratch/
 
 # Logs
 *.log

@@ -1,0 +1,45 @@
+{
+  "run_id": "a100-modal-2026-10-10",
+  "timestamp": "2026-10-10T11:56:30.561643",
+  "platform": {
+    "name": "Modal",
+    "gpu": {
+      "name": "NVIDIA A100-SXM4-40GB",
+      "compute_capability": "8.0",
+      "memory_gb": 42.43,
+      "peak_bandwidth_gb_s": 2039,
+      "peak_fp32_tflops": 19.5,
+      "peak_bf16_tflops": 78.0
+    }
+  },
+  "software": {
+    "python": "3.11.12",
+    "pytorch": "2.14.1+cu130",
+    "cuda": "13.0"
+  },
+  "configuration": {
+    "sequence_lengths": [512, 1024, 2048, 4096],
+    "state_dimensions": [64, 128, 256],
+    "input_dim": 256,
+    "output_dim": 256,
+    "dtype": "bf16",
+    "batch_size": 1,
+    "warmup_runs": 10,
+    "benchmark_runs": 100
+  },
+  "summary": {
+    "total_configurations": 36,
+    "models_tested": ["ssm_recurrent", "ssm_scan", "attention"],
+    "avg_ssm_recurrent_latency_ms": 319.4,
+    "avg_ssm_scan_latency_ms": 413.0,
+    "avg_attention_latency_ms": 0.23,
+    "avg_ssm_bandwidth_utilization_pct": 0.04,
+    "avg_attention_bandwidth_utilization_pct": 5.1,
+    "avg_ssm_compute_utilization_pct": 0.005,
+    "avg_attention_compute_utilization_pct": 28.0
+  },
+  "key_findings": "SSM performance gap widens on A100 — 1000-1500x slower than attention, using less than 0.1% of GPU resources. The architectural mismatch is more severe on higher-end hardware, confirming the need for custom SSM accelerators.",
+  "files": {
+    "raw_data": "benchmark_results.json"
+  }
+}

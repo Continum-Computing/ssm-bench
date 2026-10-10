@@ -1,0 +1,56 @@
+================================================================================
+SSM vs Attention Benchmark Summary Report
+================================================================================
+
+GPU Information:
+  Name: Tesla T4
+  Compute Capability: 7.5
+  Total Memory: 15.6 GB
+  Peak Memory Bandwidth: 900 GB/s
+  Peak FP32 Performance: 13.0 TFLOPS
+  Peak BF16 Performance: 26.0 TFLOPS
+
+Benchmark Metadata:
+  Timestamp: 2026-10-10T10:45:06.066986
+  Python Version: 3.13.15
+  PyTorch Version: 2.11.0+cu130
+  CUDA Version: 13.0
+
+================================================================================
+Performance Summary
+================================================================================
+
+Average Latency (ms):
+  SSM Recurrent: 388.312 ms
+  SSM Scan:      497.913 ms
+  Attention:     3.247 ms
+
+Average Bandwidth Utilization (%):
+  SSM Recurrent: 0.1%
+  SSM Scan:      0.1%
+  Attention:     0.9%
+
+Average Compute Utilization (%):
+  SSM Recurrent: 0.0%
+  SSM Scan:      0.0%
+  Attention:     6.1%
+
+================================================================================
+Key Findings
+================================================================================
+
+SSM Speedup vs Attention:
+  Recurrent: 0.01x faster
+  Scan:      0.01x faster
+
+GPU Utilization Gap:
+  SSM Recurrent bandwidth utilization: 0.1%
+  Attention bandwidth utilization:     0.9%
+  Gap: 0.8 percentage points
+
+Interpretation:
+  ✓ SSM shows significantly lower bandwidth utilization than attention,
+    suggesting GPUs are not optimized for SSM workloads.
+    This supports the hypothesis for custom SSM accelerator design.
+
+================================================================================
