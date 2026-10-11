@@ -10,7 +10,7 @@ GPUs are built for matrix multiplication. That's what they're good at. Transform
 
 State-space models (S4, Mamba, Mamba-2, Mamba-3) are different. They process sequences in linear time with a fixed-size recurrent state. The core operation is a small state update, not a big matmul. The GPU runs SSMs correctly, but it's not the right hardware for the job.
 
-We measured this. The gap is real, it's large, and it gets worse on better GPUs. That's why we're building the Continuum SSU-1.
+We measured this. The gap is real, it's large, and it gets worse on better GPUs. That's why we're building the Continuum SSU-1, a custom processor designed specifically for state-space model workloads.
 
 ## The problem
 
@@ -89,7 +89,7 @@ SSMs aren't universally better than transformers. NVIDIA research shows they lag
 
 These are real tradeoffs, not bugs. They shape what we're building:
 - SSU-1 is for workloads where SSMs are strong: long-context understanding, streaming inference, efficient decode
-- Hybrid models (SSM + attention, like Jamba) are in scope. The accelerator handles both, but the SSM path is the one we're optimizing.
+- Hybrid models (SSM + attention, like Jamba) are in scope. The custom processor handles both, but the SSM path is the one we're optimizing.
 - We're not trying to make SSMs do things they fundamentally can't do well.
 
 ## The path forward
@@ -124,7 +124,7 @@ Raw results:
 
 This isn't a business plan. It doesn't address market size, funding, or go-to-market.
 
-This isn't an architecture spec. It doesn't describe the accelerator design in detail.
+This isn't an architecture spec. It doesn't describe the custom processor design in detail.
 
 This isn't a benchmark methodology paper. See the main README for methodology details.
 
