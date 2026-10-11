@@ -1,23 +1,23 @@
 # GPU Profiling Infrastructure
 
-This directory contains tools for measuring and analyzing GPU performance of state-space models (SSMs) vs attention mechanisms. The goal is to quantify the "GPU-SSM mismatch" — whether GPUs underutilize their capabilities on SSM workloads compared to attention.
+Tools for measuring and analyzing GPU performance of state-space models (SSMs) vs. attention mechanisms.
 
 ## Overview
 
-The profiling infrastructure measures:
+The profiling infrastructure quantifies the GPU–SSM mismatch by measuring:
 
 1. **Latency** — Time per forward pass (ms)
-2. **Memory Bandwidth** — Bytes transferred per second (GB/s) and utilization vs theoretical peak
-3. **Compute Performance** — FLOPS achieved and utilization vs theoretical peak
-4. **Arithmetic Intensity** — FLOPS per byte transferred (identifies memory-bound vs compute-bound workloads)
-5. **Roofline Analysis** — Visualizes where each workload sits relative to hardware limits
+2. **Memory bandwidth** — Bytes transferred per second (GB/s) and utilization vs. theoretical peak
+3. **Compute performance** — FLOPS achieved and utilization vs. theoretical peak
+4. **Arithmetic intensity** — FLOPS per byte transferred (identifies memory-bound vs. compute-bound workloads)
+5. **Roofline analysis** — Visualizes where each workload sits relative to hardware limits
 
 ## Quick Start
 
-### Run Benchmarks
+### Run benchmarks
 
 ```bash
-# Run default benchmark sweep (512, 1024, 2048, 4096 sequence lengths)
+# Default sweep (512, 1024, 2048, 4096 sequence lengths)
 python profiling/run_benchmarks.py
 
 # Custom configuration
@@ -31,29 +31,29 @@ python profiling/run_benchmarks.py \
   --output profiling/results/my_benchmark.json
 ```
 
-### Generate Visualizations
+### Generate visualizations
 
 ```bash
-# After running benchmarks, generate all plots and reports
 python profiling/visualize.py profiling/results/benchmark_results.json
 ```
 
-This generates:
+Generates:
 - `latency_vs_seq_len.png` — Latency scaling with sequence length
 - `bandwidth_utilization.png` — Memory bandwidth utilization
 - `compute_utilization.png` — Compute utilization
 - `roofline_model.png` — Roofline analysis
 - `benchmark_summary.txt` — Text summary report
 
-## What We Measure
+## Implementations
 
 ### SSM (State-Space Model)
 
-We benchmark two SSM implementations:
-- **Recurrent** — Sequential processing, O(N) time, O(1) memory
-- **Scan** — Parallel scan algorithm, O(N) time, O(N) memory (but parallelizable)
+Two implementations:
 
-Both use the same mathematical formulation:
+- **Recurrent** — Sequential processing, O(N) time, O(1) memory
+- **Scan** — Parallel scan algorithm, O(N) time, O(N) memory (parallelizable)
+
+Both use the selective SSM formulation:
 ```
 x[k+1] = Ā_k · x[k] + B̄_k · u[k]  (state update)
 y[k]   = C · x[k] + D · u[k]        (output)
@@ -63,7 +63,7 @@ Where Ā_k and B̄_k are discretized matrices that depend on the input (selectiv
 
 ### Attention
 
-We benchmark standard multi-head attention:
+Standard multi-head attention:
 ```
 Q = X · W_Q
 K = X · W_K
@@ -72,70 +72,28 @@ Attention(Q, K, V) = softmax(Q · K^T / √d) · V
 Output = Attention · W_O
 ```
 
-### Metrics
+## Metrics
 
-**Latency (ms)**
+### Latency (ms)
 - Mean, median, P95, P99 over 100 runs
 - Warmup: 10 runs (discarded)
 
-**Memory Bandwidth (GB/s)**
+### Memory bandwidth (GB/s)
 - Calculated from total bytes transferred / time
 - Includes: input, output, weights, intermediate activations
 - Utilization = achieved / theoretical peak × 100%
 
-**Compute (TFLOPS)**
+### Compute (TFLOPS)
 - Calculated from total FLOPS / time
 - FLOPS counted: matrix multiplications, element-wise operations
 - Utilization = achieved / theoretical peak × 100%
 
-**Arithmetic Intensity (FLOP/Byte)**
+### Arithmetic intensity (FLOP/byte)
 - Ratio of compute to memory traffic
 - Low intensity (< 10) = memory-bound
 - High intensity (> 100) = compute-bound
 
-## Interpreting Results
-
-### The GPU-SSM Mismatch Hypothesis
-
-We expect to find:
-
-1. **SSM has lower arithmetic intensity than attention**
-   - SSM: Many small matrix-vector operations (state updates)
-   - Attention: Large matrix-matrix multiplications (Q·K^T)
-   - GPUs are optimized for large matmuls, not small matvecs
-
-2. **SSM achieves lower bandwidth utilization**
-   - SSM's sequential nature limits memory access patterns
-   - Attention's parallel structure enables better memory coalescing
-   - Result: SSM leaves bandwidth on the table
-
-3. **SSM achieves lower compute utilization**
-   - SSM's small operations don't saturate GPU compute units
-   - Attention's large operations fully utilize tensor cores
-   - Result: SSM leaves FLOPS on the table
-
-### What the Data Tells Us
-
-**If SSM bandwidth utilization < 50%:**
-- Strong evidence for custom accelerator
-- GPUs are not optimized for SSM workloads
-- Custom dataflow could reclaim significant bandwidth
-
-**If SSM compute utilization < 30%:**
-- Strong evidence for custom accelerator
-- GPU compute units are underutilized
-- Custom compute units could be more efficient
-
-**If SSM latency is 2-5x worse than attention:**
-- Confirms the mismatch is significant
-- Justifies hardware investment
-
-**If SSM performs similarly to attention:**
-- Hypothesis may be wrong
-- GPUs may already handle SSMs well
-- Custom accelerator may not provide significant benefits
-
-## Configuration Options
+## Configuration
 
 ### BenchmarkConfig
 
@@ -150,7 +108,7 @@ BenchmarkConfig(
 )
 ```
 
-### Command-Line Arguments
+### Command-line arguments
 
 ```bash
 --seq-lens      # List of sequence lengths to test
@@ -192,86 +150,20 @@ Install dependencies:
 pip install torch matplotlib numpy
 ```
 
-## Example Output
-
-### Benchmark Summary
-
-```
-GPU: NVIDIA A100-SXM4-80GB
-Compute Capability: 8.0
-Total Memory: 80.0 GB
-Peak Memory Bandwidth: 2039 GB/s
-Peak FP32 Performance: 19.5 TFLOPS
-Peak BF16 Performance: 78.0 TFLOPS
-
-Average Latency (ms):
-  SSM Recurrent: 12.345 ms
-  SSM Scan:      8.234 ms
-  Attention:     15.678 ms
-
-Average Bandwidth Utilization (%):
-  SSM Recurrent: 23.4%
-  SSM Scan:      31.2%
-  Attention:     67.8%
-
-Average Compute Utilization (%):
-  SSM Recurrent: 8.7%
-  SSM Scan:      12.3%
-  Attention:     45.6%
-
-SSM Speedup vs Attention:
-  Recurrent: 1.27x faster
-  Scan:      1.90x faster
-
-GPU Utilization Gap:
-  SSM Recurrent bandwidth utilization: 23.4%
-  Attention bandwidth utilization:     67.8%
-  Gap: 44.4 percentage points
-
-Interpretation:
-  ✓ SSM shows significantly lower bandwidth utilization than attention,
-    suggesting GPUs are not optimized for SSM workloads.
-    This supports the hypothesis for custom SSM accelerator design.
-```
-
-## Next Steps
-
-After running benchmarks and analyzing results:
-
-1. **If hypothesis confirmed** (SSM utilization < 50%):
-   - Proceed with Kalman accelerator design
-   - Use profiling data to guide architecture decisions
-   - Focus on improving bandwidth utilization for SSM workloads
-
-2. **If hypothesis not confirmed** (SSM utilization > 70%):
-   - Re-evaluate the need for custom accelerator
-   - Consider software optimizations instead
-   - Pivot to different workload or approach
-
-3. **Document findings**:
-   - Update `docs/gap-report/` with detailed analysis
-   - Create decision record in kalman repo
-   - Share results with team
-
 ## Troubleshooting
 
-### CUDA Out of Memory
+### CUDA out of memory
 
-If you encounter OOM errors:
 - Reduce `--seq-lens` (start with smaller values)
 - Reduce `--state-dims`
-- Use `--dtype fp16` or `--dtype bf16` instead of `fp32`
+- Use `--dtype bf16` instead of `fp32`
 
-### Slow Benchmark Runs
+### Slow benchmark runs
 
-Benchmarks can take time, especially for large configurations:
-- Default sweep: 4 seq_lens × 3 state_dims × 3 models = 36 configurations
-- Each configuration: 10 warmup + 100 benchmark runs
-- Estimated time: 5-15 minutes depending on GPU
+Default sweep: 4 seq_lens × 3 state_dims × 3 models = 36 configurations. Each configuration runs 10 warmup + 100 benchmark iterations. Estimated time: 5–15 minutes depending on GPU.
 
-### No GPU Available
+### No GPU available
 
-If you see "CUDA not available":
 - Ensure NVIDIA drivers are installed
 - Ensure PyTorch is installed with CUDA support
 - Check `nvidia-smi` shows your GPU

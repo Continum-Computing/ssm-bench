@@ -27,9 +27,13 @@ htmlcov/
 *.swo
 *~
 
+# Qwen Code
+.qwen/
+
 # OS
 .DS_Store
 Thumbs.db
+Desktop.ini
 
 # Profiling results — track organized results, ignore temporary files
 profiling/results/*.tmp
@@ -43,3 +47,12 @@ profiling/results/*-scratch/
 *.tmp
 *.bak
 *.swp
+
+# Windows-specific (WSL-only project now)
+*.exe
+*.bat
+*.cmd
+*.dll
+*.pyd
+*.obj
+*.lib
