@@ -236,4 +236,4 @@ This repository (`ssm-bench`) is the benchmark suite that measures the GPU gap. 
 
 The two repositories have a strict sequential dependency: kalman's architecture design does not begin until ssm-bench has produced the gap report with a go/no-go recommendation. The result format is structured (JSON schema in `docs/results-schema.md`) so that kalman can programmatically consume the data.
 
-See `kalman/docs/thesis.md` for the full hypothesis and evidence criteria.
+See `kalman/docs/whitepaper.md` for the full hypothesis, evidence, and benchmark results.
