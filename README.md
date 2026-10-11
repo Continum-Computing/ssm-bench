@@ -8,6 +8,8 @@
 
 > **Status: early.** The scaffolding and methodology are in place. **No benchmark results have been published yet.** Numbers appear in this README only after they can be reproduced from the scripts in this repository.
 
+📄 **[Read the whitepaper](docs/whitepaper.md)** — GPU–SSM mismatch hypothesis, benchmark results, and the case for purpose-built silicon.
+
 ---
 
 ## What this is
@@ -236,4 +238,4 @@ This repository (`ssm-bench`) is the benchmark suite that measures the GPU gap. 
 
 The two repositories have a strict sequential dependency: kalman's architecture design does not begin until ssm-bench has produced the gap report with a go/no-go recommendation. The result format is structured (JSON schema in `docs/results-schema.md`) so that kalman can programmatically consume the data.
 
-See `kalman/docs/thesis.md` for the full hypothesis and evidence criteria.
+See [`docs/whitepaper.md`](docs/whitepaper.md) for the full hypothesis, evidence, and benchmark results.
