@@ -36,7 +36,7 @@ The important number is the last row. SSMs are severely memory-bound. Attention 
 
 The other important finding: the gap gets *worse* on better hardware. A100 has 2.3x more bandwidth than T4. Attention takes advantage of it (bandwidth utilization goes from 1.15% to 9.30%). SSM doesn't benefit at all (bandwidth utilization actually drops from 0.15% to 0.08%). SSM latency is identical on both GPUs (319ms average). That tells you the problem isn't the GPU being slow. It's the GPU being the wrong tool.
 
-**Go/no-go decision:** GO. The gap is large enough to justify custom silicon. Proceeding with Continuum SSU-1 (Kalman architecture).
+**Go/no-go decision:** GO. The gap is large enough to justify custom silicon. Proceeding with Continuum SSU-1 (Kalman architecture), a custom processor designed specifically for SSM workloads.
 
 ### Raw data
 
@@ -189,4 +189,4 @@ Apache 2.0. See [LICENSE](LICENSE).
 
 ## Continuum SSU-1
 
-This repo measures the GPU gap. The [kalman](https://github.com/Continuum-Computiing/kalman) repo (private) designs the accelerator that closes it. ssm-bench produces the data, kalman consumes it.
+This repo measures the GPU gap. The [kalman](https://github.com/Continuum-Computiing/kalman) repo (private) designs the custom processor that closes it. ssm-bench produces the data, kalman consumes it.
