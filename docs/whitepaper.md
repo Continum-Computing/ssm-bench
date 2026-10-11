@@ -1,199 +1,111 @@
-# Whitepaper: GPU–SSM Mismatch and the Case for Purpose-Built Silicon
+# GPU-SSM Mismatch: Why We're Building Custom Silicon
 
-> **Status:** Evidence-backed. Hypothesis confirmed on 2026-10-10 via benchmarks on Tesla T4 and A100-SXM4-40GB.
-
----
-
-## Executive Summary
-
-GPUs are physically built for dense matrix multiplication — the compute pattern of transformer attention. State-space models (SSMs) have a fundamentally different compute pattern: sequential state recurrence, small state updates streamed through memory. Running an SSM on a GPU works, but the hardware cannot convert the algorithm's arithmetic savings into proportional speed or energy gains.
-
-**We measured this gap.** On two GPU architectures (T4 and A100), SSM inference is **100–1,500x slower** than attention, uses **less than 0.1% of GPU resources**, and — critically — the gap **widens** on higher-end hardware. This proves the mismatch is architectural, not a temporary optimization issue.
-
-**Conclusion:** A purpose-built accelerator co-designed for the SSM compute pattern can reclaim a significant portion of this wasted capacity. The Kalman project is building that accelerator.
+*Oct 10, 2026*
 
 ---
 
-## 1. The problem
+## The short version
 
-Transformers dominate AI today, but their attention mechanism scales as O(N²) — every token must be compared to every other token. For long contexts, this is expensive in compute, memory, and energy.
+GPUs are built for matrix multiplication. That's what they're good at. Transformers do a lot of matrix multiplication, so GPUs and transformers work well together.
 
-State-space models (S4 → Mamba → Mamba-2 → Mamba-3) solved this algorithmically. They process sequences in O(N) with a fixed-size recurrent state, matching or approaching transformer quality on most benchmarks. The algorithm side of this problem is done.
+State-space models (S4, Mamba, Mamba-2, Mamba-3) are different. They process sequences in linear time with a fixed-size recurrent state. The core operation is a small state update, not a big matmul. The GPU runs SSMs correctly, but it's not the right hardware for the job.
 
-But there is a second problem that the algorithmic fix does not address:
+We measured this. The gap is real, it's large, and it gets worse on better GPUs. That's why we're building the Continuum SSU-1.
 
-**GPUs are physically built for dense matrix multiplication.** Their architecture — systolic arrays, massive parallel compute units, high memory bandwidth optimized for large tensor transfers — is co-designed with the transformer's compute pattern. Attention is a sequence of large matmuls. GPUs excel at large matmuls. The hardware and the algorithm fit.
+## The problem
 
-SSMs have a fundamentally different compute pattern. The core operation is a sequential state recurrence:
+Transformers scale as O(N²) in sequence length. Every token attends to every other token. For long contexts, that's expensive.
+
+SSMs fixed this algorithmically. They're O(N) with a fixed-size state. On paper, they should be faster and cheaper.
+
+But there's a second problem the algorithmic fix doesn't address: GPUs are physically designed for dense matrix multiplication. Their architecture (systolic arrays, massive parallel compute, high memory bandwidth for large tensors) is co-designed with the transformer's compute pattern.
+
+SSMs have a different pattern. The core operation is:
 
 ```
 x[k+1] = Ā · x[k] + B̄ · u[k]      (state update)
 y[k]   = C · x[k] + D · u[k]        (output)
 ```
 
-where Ā, B̄, C are matrices and x is the hidden state. In selective models (Mamba and beyond), these matrices depend on the input — the model dynamically chooses what to remember and what to ignore. The computation is a stream of small state updates flowing through memory, or an associative scan reformulation of the same recurrence. This is structurally closer to a recurrence than to a matmul.
+In selective models (Mamba and beyond), Ā and B̄ depend on the input. The model dynamically chooses what to remember. The computation is a stream of small state updates, not a sequence of large matmuls.
 
-**Running an SSM on a GPU is a structural mismatch.** The algorithm does less arithmetic, but the hardware cannot convert that arithmetic saving into proportional speed or energy gains, because the hardware was designed for a different shape of work. The GPU works — it runs SSMs correctly — but it is not the right machine for the job.
+Running an SSM on a GPU is like using a freight train to deliver a package across town. It works, but it's not the right vehicle.
 
-This is the gap this project exists to measure and, if the gap is large enough, to close with custom silicon.
+## What we tested
 
----
+We didn't test whether SSMs are better than transformers. That's already established.
 
-## 2. The hypothesis
+We tested one thing: **do GPUs convert the SSM's arithmetic savings into proportional speed or energy gains?**
 
-**Hypothesis (CONFIRMED 2026-10-10).** State-space and linear-recurrence models do less arithmetic than attention, but GPUs — built around dense matrix multiplication — do not turn that saving into proportional speed or energy gains. The measured throughput-per-watt of SSM inference on GPUs is significantly below what the algorithm's arithmetic cost would predict, and significantly below what a chip whose dataflow matches the recurrence pattern could achieve.
+We measured three dimensions:
 
-**Evidence:** Benchmarks on Tesla T4 and A100-SXM4-40GB confirm the hypothesis with overwhelming margins:
+1. **Compute utilization** - how much of the GPU's theoretical FLOP/s actually gets used
+2. **Memory bandwidth utilization** - how much of the GPU's bandwidth gets consumed
+3. **Energy efficiency** - joules per token vs. the arithmetic cost
 
-| Metric | T4 | A100 |
-| --- | --- | --- |
-| SSM vs. attention latency | 100–200x slower | 1,000–1,500x slower |
-| Bandwidth utilization (SSM) | 0.02–0.15% | 0.01–0.08% |
-| Compute utilization (SSM) | < 0.2% | 0.006% |
-| Arithmetic intensity (SSM) | 3–6 FLOP/byte | 3–6 FLOP/byte |
-| Arithmetic intensity (attention) | 146–229 FLOP/byte | 146–229 FLOP/byte |
+We benchmarked on two GPUs: Tesla T4 (Google Colab, free) and A100-SXM4-40GB (Modal, ~$1.80/hour). 36 configurations per GPU: 4 sequence lengths (512, 1024, 2048, 4096) × 3 state dimensions (64, 128, 256) × 3 model types (SSM recurrent, SSM scan, attention).
 
-**Critical finding:** The gap widens on higher-end hardware. A100 has 2.3x more bandwidth and 3x more compute than T4. Attention benefits enormously (bandwidth utilization jumps from 1.15% to 9.30%). SSM does not benefit (bandwidth utilization drops from 0.15% to 0.08%). This proves the mismatch is architectural, not a kernel-tuning issue that will resolve with better software.
+Baselines: FlashAttention-2 for attention, official Mamba CUDA kernels for SSM. We're comparing against the best available, not deliberately weak code.
 
-**Decision:** GO — proceed with Kalman accelerator design.
+## What we found
 
----
-
-## 3. What we tested
-
-We did not test whether SSMs are better algorithms than transformers. That is already established.
-
-We did not test whether we can "outpace NVIDIA" in general. That is not the claim.
-
-We tested one specific, measurable claim:
-
-> **For SSM and linear-recurrence inference workloads, there exists a measurable gap between the algorithm's theoretical efficiency and the GPU's actual efficiency, and a purpose-built accelerator can close a significant portion of that gap.**
-
-The gap has three dimensions we measured independently:
-
-| Dimension | What it means | How we measured it |
-| --- | --- | --- |
-| **Compute utilization** | How much of the GPU's theoretical FLOP/s is actually used during SSM inference | Achieved TFLOP/s vs. peak TFLOP/s at matching precision |
-| **Memory bandwidth utilization** | How much of the GPU's memory bandwidth is consumed by state/weight movement vs. useful computation | Achieved GB/s vs. peak GB/s; arithmetic intensity on roofline |
-| **Energy efficiency** | Joules per token for SSM inference vs. the algorithm's arithmetic cost | Energy/token from power telemetry, compared to FLOP count |
-
----
-
-## 4. Benchmark methodology
-
-**Test configuration (identical on both GPUs):**
-
-| Parameter | Values |
-| --- | --- |
-| Sequence lengths | 512, 1024, 2048, 4096 |
-| State dimensions | 64, 128, 256 |
-| Model types | SSM recurrent, SSM scan, attention |
-| Total configurations per GPU | 36 |
-| GPUs tested | Tesla T4 (Google Colab), A100-SXM4-40GB (Modal) |
-
-**Baselines:**
-- Attention: FlashAttention-2
-- SSM: Official Mamba CUDA kernels (recurrent and scan variants)
-- Hardware targets: H100, A100 (datacenter), L40S (inference-optimized), L4/T4 (edge)
-
-**Results:** Structured JSON output per GPU, stored in [`profiling/results/`](../profiling/results/). Full analysis in [`profiling/results/analysis/gpu_comparison_t4_vs_a100.md`](../profiling/results/analysis/gpu_comparison_t4_vs_a100.md).
-
----
-
-## 5. Key findings
-
-### 5.1 Latency gap
+The gap is large.
 
 **Tesla T4:**
-- seq_len=512: SSM 109ms vs. Attention 0.69ms (**160x slower**)
-- seq_len=4096: SSM 829ms vs. Attention 8.14ms (**102x slower**)
-
-**A100-SXM4-40GB:**
-- seq_len=512: SSM 86ms vs. Attention 0.14ms (**597x slower**)
-- seq_len=4096: SSM 707ms vs. Attention 0.45ms (**1,573x slower**)
-
-### 5.2 Bandwidth utilization
-
-**T4:**
-- SSM: 0.02–0.15%
-- Attention: 0.60–1.15%
+- SSM is 100-200x slower than attention
+- SSM uses 0.02-0.15% of bandwidth
+- SSM uses < 0.2% of compute
+- SSM arithmetic intensity: 3-6 FLOP/byte (memory-bound)
+- Attention arithmetic intensity: 146-229 FLOP/byte (compute-bound)
 
 **A100:**
-- SSM: 0.01–0.08% (worse than T4)
-- Attention: 1.25–9.30%
+- SSM is 1,000-1,500x slower than attention
+- SSM uses 0.01-0.08% of bandwidth (worse than T4)
+- SSM uses 0.006% of compute
+- Same arithmetic intensity
 
-### 5.3 Compute utilization
+Here's the critical part: **the gap widens on better hardware.**
 
-**A100:**
-- Attention reaches 55.5% of peak FLOP/s
-- SSM stays at 0.006%
+A100 has 2.3x more bandwidth than T4, 3x more compute. Attention takes advantage of it (bandwidth utilization jumps from 1.15% to 9.30%). SSM doesn't benefit at all. SSM average latency is identical on both GPUs: 319ms.
 
-### 5.4 Arithmetic intensity
+If this were a kernel tuning problem, better hardware would close the gap. It doesn't. The mismatch is architectural.
 
-- SSM: 3–6 FLOP/byte — **severely memory-bound**
-- Attention: 146–229 FLOP/byte — **compute-bound**
+## What would have changed our mind
 
-### 5.5 The gap widens on better hardware
+We set this up as a go/no-go test. If the gap was small (< 40% headroom below roofline), we'd pivot to software optimization or a different workload. If the gap was large (> 60% headroom), we'd proceed with custom silicon.
 
-A100 has 2.3x more bandwidth and 3x more compute than T4.
+The gap is 100-1,500x. That's not small.
 
-- Attention benefits enormously: bandwidth utilization jumps from 1.15% to 9.30%
-- SSM does not benefit: bandwidth utilization drops from 0.15% to 0.08%
-- SSM average latency is identical on both GPUs (319ms)
+We also would have reconsidered if:
+- SSMs didn't match transformer quality at scale (they do, mostly)
+- Hybrid models dominated and attention was >50% of compute (it's not, yet)
+- A competitor was already doing this well (they're not)
 
-**This is the critical finding.** If the gap were a kernel-tuning issue, better hardware would close it. Instead, better hardware widens it. The mismatch is architectural.
+## Known SSM weaknesses
 
----
+SSMs aren't universally better than transformers. NVIDIA research shows they lag on:
+- In-context learning (learning new patterns from examples in the prompt)
+- Copying and lookup (precise token-level recall over long contexts)
 
-## 6. Known SSM weaknesses that shape the design
+These are real tradeoffs, not bugs. They shape what we're building:
+- SSU-1 is for workloads where SSMs are strong: long-context understanding, streaming inference, efficient decode
+- Hybrid models (SSM + attention, like Jamba) are in scope. The accelerator handles both, but the SSM path is the one we're optimizing.
+- We're not trying to make SSMs do things they fundamentally can't do well.
 
-The hypothesis is about SSM *inference efficiency*, not about SSMs being universally better than transformers. NVIDIA research has shown that Mamba and Mamba-2 lag transformers on specific tasks:
+## The path forward
 
-- **In-context learning** — SSMs are weaker at learning new patterns from examples within a prompt
-- **Copying and lookup** — SSMs struggle with precise token-level recall over long contexts
+1. ✅ ssm-bench produces GPU gap report (done, Oct 10, 2026)
+2. ✅ kalman designs the architecture (done, Oct 10, 2026)
+3. ✅ kalman builds the compiler (done, Oct 10, 2026)
+4. ✅ kalman writes the RTL (done, Oct 10, 2026)
+5. 🔄 kalman prototypes on FPGA (next)
+6. ⏳ kalman validates the claim (pending)
 
-These are real architectural tradeoffs, not bugs to be fixed. They shape the accelerator's scope:
+Each step is gated by the previous step. We don't move forward until the tests pass.
 
-- The SSU is designed for workloads where SSMs are strong: long-context understanding, streaming inference, efficient decode
-- Hybrid models (SSM + attention layers, like Jamba) are explicitly in scope — the accelerator handles both patterns, with the SSM path being the one optimized for efficiency
-- The accelerator is not designed to make SSMs do things they fundamentally cannot do well
+## Reproducing this
 
----
-
-## 7. What would have changed our mind
-
-This project is evidence-driven, not belief-driven. The following outcomes would have changed the plan:
-
-| Evidence | Consequence |
-| --- | --- |
-| GPU gap is small (< 40% headroom below roofline) | Project narrows. Custom silicon not justified. Pivot to software-only optimization or different workload class. |
-| GPU gap is large (> 60% headroom) | **← This is what we observed.** Proceed to architecture design. |
-| SSMs do not match transformer quality at scale | Reassess whether the workload will be large enough to justify a chip. |
-| Hybrid models dominate, with attention >50% of compute | Accelerator must be a general-purpose sequence accelerator, not SSM-only. Architecture scope widens. |
-| A competing accelerator already targets this workload effectively | Differentiate on a different axis (energy efficiency, edge deployment, specific workload niche) or pivot. |
-
-**Actual outcome:** GPU gap is large (100–1,500x). Proceed to architecture design.
-
----
-
-## 8. The path from evidence to silicon
-
-The path is gated. Each step begins only after the previous step's tests pass.
-
-| Step | Status | What it produces |
-| --- | --- | --- |
-| 1. ssm-bench produces GPU gap report | ✅ **Complete** (2026-10-10) | Measured evidence of GPU underutilization on SSM workloads |
-| 2. kalman designs the architecture | ✅ **Complete** (2026-10-10) | Analytical cost models of candidate dataflows, scored against gap report |
-| 3. kalman builds the compiler | ✅ **Complete** (2026-10-10) | MLIR dialect that lowers SSM operations to accelerator instruction set |
-| 4. kalman writes the RTL | ✅ **Complete** (2026-10-10) | SystemVerilog implementation, verified against golden model |
-| 5. kalman prototypes on FPGA | 🔄 **Next** | Kalman Dev Kit running real SSM inference end-to-end |
-| 6. kalman validates the claim | ⏳ Pending | FPGA-measured throughput-per-watt vs. GPU baseline |
-
----
-
-## 9. Reproducing these results
-
-All benchmark data is in this repository. To reproduce:
+All the data is in this repo.
 
 ```bash
 git clone https://github.com/Continuum-Computiing/ssm-bench.git
@@ -203,15 +115,17 @@ make test          # correctness tests
 make profile       # GPU profiling (requires NVIDIA GPU)
 ```
 
-Raw results: [`profiling/results/t4-colab-2026-10-10/`](../profiling/results/t4-colab-2026-10-10/) and [`profiling/results/a100-modal-2026-10-10/`](../profiling/results/a100-modal-2026-10-10/).
+Raw results:
+- [Tesla T4](profiling/results/t4-colab-2026-10-10/)
+- [A100](profiling/results/a100-modal-2026-10-10/)
+- [T4 vs A100 comparison](profiling/results/analysis/gpu_comparison_t4_vs_a100.md)
 
-Comparison analysis: [`profiling/results/analysis/gpu_comparison_t4_vs_a100.md`](../profiling/results/analysis/gpu_comparison_t4_vs_a100.md).
+## What this isn't
 
----
+This isn't a business plan. It doesn't address market size, funding, or go-to-market.
 
-## 10. What this document is not
+This isn't an architecture spec. It doesn't describe the accelerator design in detail.
 
-- It is not a business plan. It does not address market size, funding, or go-to-market.
-- It is not an architecture specification. It does not describe the accelerator's design in detail.
-- It is not a benchmark methodology document. See the [main README](../README.md) for methodology details.
-- It is a statement of what we believed, what we tested, what we found, and what we are doing about it.
+This isn't a benchmark methodology paper. See the main README for methodology details.
+
+This is a statement of what we believed, what we tested, what we found, and what we're doing about it.
