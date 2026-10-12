@@ -44,6 +44,24 @@ The other important finding: the gap gets *worse* on better hardware. A100 has 2
 - [A100 results](profiling/results/a100-modal-2026-10-10/)
 - [T4 vs A100 comparison](profiling/results/analysis/gpu_comparison_t4_vs_a100.md)
 
+### Visualizations
+
+**Latency scaling** - SSM latency vs attention across sequence lengths:
+
+![Latency vs sequence length](profiling/results/t4-colab-2026-10-10/plots/latency_vs_seq_len.png)
+
+**Bandwidth utilization** - SSM uses almost none of the GPU's memory bandwidth:
+
+![Bandwidth utilization](profiling/results/t4-colab-2026-10-10/plots/bandwidth_utilization.png)
+
+**Compute utilization** - The GPU's compute units barely wake up for SSM workloads:
+
+![Compute utilization](profiling/results/t4-colab-2026-10-10/plots/compute_utilization.png)
+
+**Roofline analysis** - SSM is severely memory-bound, attention is compute-bound:
+
+![Roofline model](profiling/results/t4-colab-2026-10-10/plots/roofline_model.png)
+
 ## What we measure
 
 | Metric | Unit | Notes |
