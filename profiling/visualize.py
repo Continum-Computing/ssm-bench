@@ -111,20 +111,25 @@ def plot_bandwidth_utilization(results: Dict, output_path: str = "bandwidth_util
     ssm_rec_avg = [np.mean(ssm_recurrent[s]) for s in seq_lens]
     ssm_scan_avg = [np.mean(ssm_scan[s]) for s in seq_lens]
     attn_avg = [np.mean(attention[s]) for s in seq_lens]
-    
+
+    # Calculate dynamic y-axis max based on data
+    all_values = ssm_rec_avg + ssm_scan_avg + attn_avg
+    y_max = max(all_values) * 1.2  # 20% padding
+    y_max = max(y_max, 1.0)  # At least 1%
+
     # Plot
     plt.figure(figsize=(10, 6))
     plt.plot(seq_lens, ssm_rec_avg, 'o-', label='SSM Recurrent', linewidth=2, markersize=8)
     plt.plot(seq_lens, ssm_scan_avg, 's-', label='SSM Scan', linewidth=2, markersize=8)
     plt.plot(seq_lens, attn_avg, '^-', label='Attention', linewidth=2, markersize=8)
-    
+
     plt.xlabel('Sequence Length', fontsize=12)
     plt.ylabel('Bandwidth Utilization (%)', fontsize=12)
     plt.title('Memory Bandwidth Utilization vs Sequence Length', fontsize=14, fontweight='bold')
     plt.legend(fontsize=11)
     plt.grid(True, alpha=0.3)
     plt.xscale('log', base=2)
-    plt.ylim(0, 100)
+    plt.ylim(0, y_max)
     plt.tight_layout()
     plt.savefig(output_path, dpi=150)
     print(f"Saved bandwidth utilization plot to {output_path}")
@@ -167,20 +172,25 @@ def plot_compute_utilization(results: Dict, output_path: str = "compute_utilizat
     ssm_rec_avg = [np.mean(ssm_recurrent[s]) for s in seq_lens]
     ssm_scan_avg = [np.mean(ssm_scan[s]) for s in seq_lens]
     attn_avg = [np.mean(attention[s]) for s in seq_lens]
-    
+
+    # Calculate dynamic y-axis max based on data
+    all_values = ssm_rec_avg + ssm_scan_avg + attn_avg
+    y_max = max(all_values) * 1.2  # 20% padding
+    y_max = max(y_max, 1.0)  # At least 1%
+
     # Plot
     plt.figure(figsize=(10, 6))
     plt.plot(seq_lens, ssm_rec_avg, 'o-', label='SSM Recurrent', linewidth=2, markersize=8)
     plt.plot(seq_lens, ssm_scan_avg, 's-', label='SSM Scan', linewidth=2, markersize=8)
     plt.plot(seq_lens, attn_avg, '^-', label='Attention', linewidth=2, markersize=8)
-    
+
     plt.xlabel('Sequence Length', fontsize=12)
     plt.ylabel('Compute Utilization (%)', fontsize=12)
     plt.title('Compute Utilization vs Sequence Length', fontsize=14, fontweight='bold')
     plt.legend(fontsize=11)
     plt.grid(True, alpha=0.3)
     plt.xscale('log', base=2)
-    plt.ylim(0, 100)
+    plt.ylim(0, y_max)
     plt.tight_layout()
     plt.savefig(output_path, dpi=150)
     print(f"Saved compute utilization plot to {output_path}")

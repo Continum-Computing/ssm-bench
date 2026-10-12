@@ -176,7 +176,7 @@ Commit messages: `type: summary` (feat, fix, docs, test, chore). No secrets.
 
 ```bibtex
 @software{ssm_bench,
-  author  = {Continuum Computing},
+  author  = {Lincoln Angufibo},
   title   = {ssm-bench: reproducible benchmarks for state-space, attention and hybrid sequence models},
   year    = {2026},
   url     = {https://github.com/Continuum-Computiing/ssm-bench}
