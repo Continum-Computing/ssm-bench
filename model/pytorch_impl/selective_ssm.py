@@ -8,14 +8,11 @@ All functions should produce identical outputs to the NumPy reference when given
 the same inputs (verified by tests).
 """
 
-
 import torch
 
 
 def discretize_zoh(
-    A: torch.Tensor,
-    B: torch.Tensor,
-    delta: torch.Tensor
+    A: torch.Tensor, B: torch.Tensor, delta: torch.Tensor
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """
     Discretize continuous-time SSM parameters using Zero-Order Hold (ZOH).
@@ -48,7 +45,7 @@ def selective_ssm_recurrent(
     C: torch.Tensor,
     D: torch.Tensor,
     delta: torch.Tensor,
-    x0: torch.Tensor = None
+    x0: torch.Tensor = None,
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """
     Selective SSM computed recurrently (sequential, step-by-step).
@@ -98,7 +95,7 @@ def selective_ssm_scan(
     C: torch.Tensor,
     D: torch.Tensor,
     delta: torch.Tensor,
-    x0: torch.Tensor = None
+    x0: torch.Tensor = None,
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """
     Selective SSM computed via associative scan (parallel during training).
@@ -147,7 +144,7 @@ def selective_ssm_scan(
     x_all[0] = x0.clone()
 
     for k in range(seq_len - 1):
-        x_all[k+1] = A_bar_all[k] @ x_all[k] + Bu[k]
+        x_all[k + 1] = A_bar_all[k] @ x_all[k] + Bu[k]
 
     # Compute outputs
     y = torch.zeros((seq_len, output_dim), dtype=u.dtype, device=u.device)
@@ -161,9 +158,7 @@ def selective_ssm_scan(
 
 
 def compute_delta(
-    u: torch.Tensor,
-    W_delta: torch.Tensor,
-    b_delta: torch.Tensor = None
+    u: torch.Tensor, W_delta: torch.Tensor, b_delta: torch.Tensor = None
 ) -> torch.Tensor:
     """
     Compute input-dependent step sizes (the selective mechanism).

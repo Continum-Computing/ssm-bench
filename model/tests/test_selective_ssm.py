@@ -275,9 +275,7 @@ class TestRecurrentVsScanEquivalence:
         delta = np.abs(np.random.randn(seq_len, state_dim)) + 0.1
         x0 = np.random.randn(state_dim)
 
-        y_recurrent, x_final_recurrent = selective_ssm_recurrent(
-            u, A, B, C, D, delta, x0=x0
-        )
+        y_recurrent, x_final_recurrent = selective_ssm_recurrent(u, A, B, C, D, delta, x0=x0)
         y_scan, x_final_scan = selective_ssm_scan(u, A, B, C, D, delta, x0=x0)
 
         assert_allclose(y_recurrent, y_scan, rtol=1e-6, atol=1e-8)
@@ -322,9 +320,7 @@ class TestRecurrentVsScanEquivalence:
             D = np.random.randn(output_dim, input_dim).astype(dtype)
             delta = (np.abs(np.random.randn(seq_len, state_dim)) + 0.1).astype(dtype)
 
-            y_recurrent, x_final_recurrent = selective_ssm_recurrent(
-                u, A, B, C, D, delta
-            )
+            y_recurrent, x_final_recurrent = selective_ssm_recurrent(u, A, B, C, D, delta)
             y_scan, x_final_scan = selective_ssm_scan(u, A, B, C, D, delta)
 
             # Use looser tolerance for float32

@@ -24,14 +24,11 @@ where:
 The subscript k on Ā and B̄ indicates they depend on the input (selective mechanism).
 """
 
-
 import numpy as np
 
 
 def discretize_zoh(
-    A: np.ndarray,
-    B: np.ndarray,
-    delta: np.ndarray
+    A: np.ndarray, B: np.ndarray, delta: np.ndarray
 ) -> tuple[np.ndarray, np.ndarray]:
     """
     Discretize continuous-time SSM parameters using Zero-Order Hold (ZOH).
@@ -74,7 +71,7 @@ def selective_ssm_recurrent(
     C: np.ndarray,
     D: np.ndarray,
     delta: np.ndarray,
-    x0: np.ndarray = None
+    x0: np.ndarray = None,
 ) -> tuple[np.ndarray, np.ndarray]:
     """
     Selective SSM computed recurrently (sequential, step-by-step).
@@ -137,7 +134,7 @@ def selective_ssm_scan(
     C: np.ndarray,
     D: np.ndarray,
     delta: np.ndarray,
-    x0: np.ndarray = None
+    x0: np.ndarray = None,
 ) -> tuple[np.ndarray, np.ndarray]:
     """
     Selective SSM computed via associative scan (parallel during training).
@@ -201,12 +198,12 @@ def selective_ssm_scan(
     # where x[0] = x0 (initial state)
     # and x[k+1] = A_bar[k] @ x[k] + B_bar[k] @ u[k]
     # Then y[k] = C @ x[k] + D @ u[k]
-    
+
     x_all = np.zeros((seq_len, state_dim), dtype=u.dtype)
     x_all[0] = x0.copy()
-    
+
     for k in range(seq_len - 1):
-        x_all[k+1] = A_bar_all[k] @ x_all[k] + Bu[k]
+        x_all[k + 1] = A_bar_all[k] @ x_all[k] + Bu[k]
 
     # Compute outputs
     y = np.zeros((seq_len, output_dim), dtype=u.dtype)
@@ -220,11 +217,7 @@ def selective_ssm_scan(
     return y, x_final
 
 
-def compute_delta(
-    u: np.ndarray,
-    W_delta: np.ndarray,
-    b_delta: np.ndarray = None
-) -> np.ndarray:
+def compute_delta(u: np.ndarray, W_delta: np.ndarray, b_delta: np.ndarray = None) -> np.ndarray:
     """
     Compute input-dependent step sizes (the selective mechanism).
 

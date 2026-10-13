@@ -128,8 +128,10 @@ def correct_result_set(run_dir: Path, dry_run: bool = False) -> dict:
         new_bw = (r["achieved_bandwidth_gb_s"] / specs.memory_bandwidth_gb_s) * 100
         new_compute = (r["achieved_tflops"] / peak_compute) * 100
 
-        if (abs(new_bw - r["bandwidth_utilization_pct"]) > 1e-9
-                or abs(new_compute - r["compute_utilization_pct"]) > 1e-9):
+        if (
+            abs(new_bw - r["bandwidth_utilization_pct"]) > 1e-9
+            or abs(new_compute - r["compute_utilization_pct"]) > 1e-9
+        ):
             changed += 1
 
         if not dry_run:
@@ -148,14 +150,16 @@ def correct_result_set(run_dir: Path, dry_run: bool = False) -> dict:
     if dry_run:
         return report
 
-    raw["metadata"]["gpu"].update({
-        "memory_bandwidth_gb_s": specs.memory_bandwidth_gb_s,
-        "fp32_tflops": specs.fp32_tflops,
-        "fp16_tflops": specs.fp16_tensor_tflops,
-        "bf16_tflops": specs.bf16_tflops,
-        "specs_source": "datasheet",
-        "specs_note": specs.note,
-    })
+    raw["metadata"]["gpu"].update(
+        {
+            "memory_bandwidth_gb_s": specs.memory_bandwidth_gb_s,
+            "fp32_tflops": specs.fp32_tflops,
+            "fp16_tflops": specs.fp16_tensor_tflops,
+            "bf16_tflops": specs.bf16_tflops,
+            "specs_source": "datasheet",
+            "specs_note": specs.note,
+        }
+    )
 
     # Preserve an existing audit block. Reading old_peaks from metadata that a
     # previous run already corrected would record the corrected values as
@@ -186,8 +190,9 @@ def correct_result_set(run_dir: Path, dry_run: bool = False) -> dict:
     return report
 
 
-def _correct_metadata_file(meta_path: Path, raw: dict, specs, old_peaks: dict,
-                           results: list[dict], original: list[dict]) -> None:
+def _correct_metadata_file(
+    meta_path: Path, raw: dict, specs, old_peaks: dict, results: list[dict], original: list[dict]
+) -> None:
     """
     Rebuild the metadata.json summary block from the raw per-config data.
 
@@ -205,14 +210,16 @@ def _correct_metadata_file(meta_path: Path, raw: dict, specs, old_peaks: dict,
     meta = json.loads(meta_path.read_text())
     gpu_block = meta["platform"]["gpu"]
 
-    gpu_block.update({
-        "peak_bandwidth_gb_s": specs.memory_bandwidth_gb_s,
-        "peak_fp32_tflops": specs.fp32_tflops,
-        "peak_fp16_tflops": specs.fp16_tensor_tflops,
-        "peak_bf16_tflops": specs.bf16_tflops,
-        "specs_source": "datasheet",
-        "specs_note": specs.note,
-    })
+    gpu_block.update(
+        {
+            "peak_bandwidth_gb_s": specs.memory_bandwidth_gb_s,
+            "peak_fp32_tflops": specs.fp32_tflops,
+            "peak_fp16_tflops": specs.fp16_tensor_tflops,
+            "peak_bf16_tflops": specs.bf16_tflops,
+            "specs_source": "datasheet",
+            "specs_note": specs.note,
+        }
+    )
 
     def subset(*model_types):
         return [r for r in results if r["model_type"] in model_types]
@@ -240,9 +247,13 @@ def _correct_metadata_file(meta_path: Path, raw: dict, specs, old_peaks: dict,
         "avg_ssm_scan_latency_ms": round(avg_latency(scan), 3),
         "avg_attention_latency_ms": round(avg_latency(attention), 3),
         "avg_ssm_bandwidth_utilization_pct": round(avg(recurrent, "bandwidth_utilization_pct"), 4),
-        "avg_attention_bandwidth_utilization_pct": round(avg(attention, "bandwidth_utilization_pct"), 4),
+        "avg_attention_bandwidth_utilization_pct": round(
+            avg(attention, "bandwidth_utilization_pct"), 4
+        ),
         "avg_ssm_compute_utilization_pct": round(avg(recurrent, "compute_utilization_pct"), 5),
-        "avg_attention_compute_utilization_pct": round(avg(attention, "compute_utilization_pct"), 4),
+        "avg_attention_compute_utilization_pct": round(
+            avg(attention, "compute_utilization_pct"), 4
+        ),
     }
 
     # Report which stored values disagreed with the raw data, so the repair is
@@ -288,15 +299,17 @@ def _correct_metadata_file(meta_path: Path, raw: dict, specs, old_peaks: dict,
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[1])
     parser.add_argument("--run-id", help="correct a single result set")
-    parser.add_argument("--dry-run", action="store_true",
-                        help="report what would change without writing")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="report what would change without writing"
+    )
     args = parser.parse_args()
 
     if args.run_id:
         run_dirs = [RESULTS_DIR / args.run_id]
     else:
         run_dirs = sorted(
-            p for p in RESULTS_DIR.iterdir()
+            p
+            for p in RESULTS_DIR.iterdir()
             if p.is_dir() and (p / "benchmark_results.json").exists()
         )
 
@@ -314,10 +327,14 @@ def main() -> int:
         prefix = "would correct" if args.dry_run else "corrected"
         print(f"{prefix} {report['run_id']} ({report['gpu']})")
         print(f"  rows: {report['configurations']}, changed: {report['rows_changed']}")
-        print(f"  bandwidth peak: {report['old_peaks']['memory_bandwidth_gb_s']} "
-              f"-> {report['new_peaks']['memory_bandwidth_gb_s']} GB/s")
-        print(f"  bf16 peak:      {report['old_peaks']['bf16_tflops']} "
-              f"-> {report['new_peaks']['bf16_tflops']} TFLOPS")
+        print(
+            f"  bandwidth peak: {report['old_peaks']['memory_bandwidth_gb_s']} "
+            f"-> {report['new_peaks']['memory_bandwidth_gb_s']} GB/s"
+        )
+        print(
+            f"  bf16 peak:      {report['old_peaks']['bf16_tflops']} "
+            f"-> {report['new_peaks']['bf16_tflops']} TFLOPS"
+        )
         print(f"  note: {report['new_peaks']['note']}")
 
     return 0
