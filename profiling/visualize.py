@@ -6,7 +6,9 @@ helping to visualize performance characteristics and identify
 the GPU-SSM mismatch.
 """
 
+import argparse
 import json
+import os
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -404,8 +406,6 @@ def generate_all_visualizations(results_path: str, run_dir: str = "profiling/res
         results_path: Path to benchmark results JSON
         run_dir: Result set directory to write into
     """
-    import os
-
     plots_dir = os.path.join(run_dir, "plots")
     os.makedirs(plots_dir, exist_ok=True)
 
@@ -423,3 +423,43 @@ def generate_all_visualizations(results_path: str, run_dir: str = "profiling/res
     print()
     print("All visualizations generated successfully!")
     print(f"Result set directory: {run_dir}")
+
+
+def main(argv: list[str] | None = None) -> int:
+    """
+    Command line entry point.
+
+    Regenerates plots and the text summary from a stored result set. No GPU is
+    needed, since everything is recomputed from the JSON already on disk.
+    """
+    parser = argparse.ArgumentParser(
+        description=(
+            "Generate plots and a text summary from a stored benchmark result "
+            "set. Writes four PNGs to <run-dir>/plots/ and one "
+            "<run-dir>/benchmark_summary.txt."
+        )
+    )
+    parser.add_argument(
+        "results_path",
+        help="path to a benchmark_results.json file",
+    )
+    parser.add_argument(
+        "--run-dir",
+        default=None,
+        help=(
+            "result set directory to write into. Defaults to the directory "
+            "holding results_path, which is the usual case."
+        ),
+    )
+    args = parser.parse_args(argv)
+
+    if not os.path.isfile(args.results_path):
+        parser.error(f"no such results file: {args.results_path}")
+
+    run_dir = args.run_dir or os.path.dirname(os.path.abspath(args.results_path))
+    generate_all_visualizations(args.results_path, run_dir)
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
