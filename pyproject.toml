@@ -25,7 +25,13 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "ruff>=0.1.0",
+    # Pinned exactly, not to a band. Ruff retunes existing rules and adds new
+    # ones in patch releases, so a range lets CI and a contributor resolve
+    # different versions and disagree about whether the same code is clean.
+    # Bump this deliberately, then fix whatever the new version reports.
+    # .github/workflows/ci.yml installs the same version and must be updated
+    # with it.
+    "ruff==0.17.0",
     "pytest-cov>=4.0.0",
 ]
 profiling = [
