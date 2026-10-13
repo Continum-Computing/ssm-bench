@@ -38,7 +38,9 @@ We ran benchmarks on two GPUs: Tesla T4 (via Google Colab) and A100-SXM4-40GB (v
 
 **What these numbers do not say.** They do not measure an architectural mismatch. This is naive SSM against naive attention, so most of the gap is our code, not the GPU. A fused Mamba kernel and FlashAttention-2 would both land somewhere completely different, and neither is in this table yet. The same caveat covers the "gap widens on better hardware" observation: a workload bound by launch overhead is not expected to benefit from extra bandwidth on any GPU.
 
-**Go/no-go decision: pending.** We are not going to justify custom silicon on a comparison of naive implementations. The decision waits on strong baselines: FlashAttention-2 for attention, official Mamba CUDA kernels for the SSM path, and CUDA graph capture to take launch overhead out of the decode measurement. Architecture work in the private `kalman` repo continues in parallel, but nothing downstream should treat this table as the evidence that settled it.
+**Go/no-go decision: pending.** We are not going to justify custom silicon on a comparison of naive implementations. The decision waits on strong baselines: FlashAttention-2 for attention, official Mamba CUDA kernels for the SSM path, CUDA graph capture to take launch overhead out of the decode measurement, and pynvml energy telemetry, since throughput-per-watt is the actual claim.
+
+This decision is a gate, not a milestone. Everything downstream of it in the private `kalman` repo is blocked until it is recorded, and the design code written ahead of the gate is frozen rather than advanced. Nothing in the table above settled anything.
 
 ### Raw data
 

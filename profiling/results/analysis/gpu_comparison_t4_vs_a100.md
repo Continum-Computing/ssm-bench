@@ -165,7 +165,7 @@ Only after 1 through 5 does the go/no-go question become answerable.
 
 ### 5. Implications for the Kalman design work
 
-Design work in the private `kalman` repo continues in parallel, but it is not licensed by this document. Anything derived from these numbers should be treated as provisional.
+Design work in the private `kalman` repo is blocked on the go/no-go decision that this dataset cannot produce. Code for the architecture, compiler, and RTL was written ahead of that gate on 2026-10-10 and is now frozen: not extended, not reviewed, not tested, and not counted as progress. Anything derived from these numbers is provisional and is discarded if the decision is no-go.
 
 Two implications do hold, because they rest on arithmetic intensity rather than on our implementation:
 
