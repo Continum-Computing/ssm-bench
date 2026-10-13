@@ -32,9 +32,12 @@ Top-level metadata for a benchmark run.
       "name": "Tesla T4",
       "compute_capability": "7.5",
       "memory_gb": 15.64,
-      "peak_bandwidth_gb_s": 900,
-      "peak_fp32_tflops": 13.0,
-      "peak_bf16_tflops": 26.0
+      "peak_bandwidth_gb_s": 320,
+      "peak_fp32_tflops": 8.1,
+      "peak_bf16_tflops": 8.1,
+      "peak_fp16_tflops": 65.0,
+      "specs_source": "datasheet",
+      "specs_note": "Turing, no BF16 tensor core path; bf16 ceiling is FP32"
     }
   },
   "software": {
@@ -77,6 +80,13 @@ Top-level metadata for a benchmark run.
 }
 ```
 
+The peak values in this example come from the `T4` entry in
+`profiling/gpu_specs_db.py`. Do not hardcode hardware peaks in benchmark
+code or documentation: compute capability is not specific enough to identify a
+GPU (Tesla T4 and RTX 2080 Ti both report 7.5), and the denominator must match
+the exact card, memory configuration, and precision. Unknown hardware should
+remain unknown rather than inherit another GPU's values.
+
 ### Fields
 
 | Field | Type | Description |
@@ -103,10 +113,12 @@ Raw per-configuration benchmark data.
       "name": "Tesla T4",
       "compute_capability": "7.5",
       "total_memory_gb": 15.637,
-      "memory_bandwidth_gb_s": 900,
-      "fp32_tflops": 13.0,
-      "fp16_tflops": 26.0,
-      "bf16_tflops": 26.0
+      "memory_bandwidth_gb_s": 320,
+      "fp32_tflops": 8.1,
+      "fp16_tflops": 65.0,
+      "bf16_tflops": 8.1,
+      "specs_source": "datasheet",
+      "specs_note": "Turing, no BF16 tensor core path; bf16 ceiling is FP32"
     },
     "python_version": "3.13.15",
     "torch_version": "2.11.0+cu130",
