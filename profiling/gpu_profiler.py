@@ -28,7 +28,8 @@ class GPUSpecs:
     fp32_tflops: float  # Theoretical peak
     fp16_tflops: float  # Theoretical peak
     bf16_tflops: float  # Theoretical peak
-    
+    specs_source: str = "datasheet"  # "datasheet" or "estimated"
+
     def to_dict(self) -> Dict:
         return {
             "name": self.name,
@@ -38,6 +39,7 @@ class GPUSpecs:
             "fp32_tflops": self.fp32_tflops,
             "fp16_tflops": self.fp16_tflops,
             "bf16_tflops": self.bf16_tflops,
+            "specs_source": self.specs_source,
         }
 
 
@@ -56,37 +58,34 @@ def get_gpu_specs(device_id: int = 0) -> Optional[GPUSpecs]:
     
     device = torch.device(f"cuda:{device_id}")
     props = torch.cuda.get_device_properties(device)
-    
-    # Get theoretical peak performance
-    # These are approximate values for common GPUs
-    # In production, you'd want a more comprehensive database
+
     compute_cap = (props.major, props.minor)
-    
-    # Estimate peak performance based on GPU architecture
-    # These are rough estimates - actual values vary by specific model
-    gpu_specs_db = {
-        # (major, minor): (mem_bw_gb_s, fp32_tflops, fp16_tflops, bf16_tflops)
-        (8, 0): (2039, 19.5, 78.0, 78.0),  # A100
-        (8, 6): (600, 10.0, 40.0, 40.0),   # RTX 3090
-        (8, 9): (768, 82.6, 165.2, 165.2), # H100
-        (7, 5): (900, 13.0, 26.0, 26.0),   # RTX 2080 Ti
-        (7, 0): (900, 14.0, 28.0, 28.0),   # V100
-    }
-    
-    # Default to conservative estimates if GPU not in database
-    mem_bw, fp32, fp16, bf16 = gpu_specs_db.get(
-        compute_cap, 
-        (300, 5.0, 10.0, 10.0)  # Conservative default
-    )
-    
+
+    # Peaks are looked up by device name, not compute capability. Compute
+    # capability is not specific enough: the Tesla T4 and the RTX 2080 Ti are
+    # both 7.5 and differ by roughly 3x in bandwidth. An earlier version keyed
+    # on capability with a silent conservative fallback, which is how the
+    # 2026-10-10 T4 run ended up divided by RTX 2080 Ti peaks.
+    specs = lookup_peak_specs(props.name)
+
+    if specs is None:
+        raise ValueError(
+            f"No datasheet peaks recorded for GPU '{props.name}' "
+            f"(compute capability {compute_cap[0]}.{compute_cap[1]}). "
+            "Add it to profiling/gpu_specs_db.py before benchmarking. "
+            "Guessing a ceiling would silently corrupt every utilization "
+            "figure derived from this run."
+        )
+
     return GPUSpecs(
         name=props.name,
         compute_capability=compute_cap,
         total_memory_gb=props.total_memory / 1e9,
-        memory_bandwidth_gb_s=mem_bw,
-        fp32_tflops=fp32,
-        fp16_tflops=fp16,
-        bf16_tflops=bf16,
+        memory_bandwidth_gb_s=specs.memory_bandwidth_gb_s,
+        fp32_tflops=specs.fp32_tflops,
+        fp16_tflops=specs.fp16_tensor_tflops,
+        bf16_tflops=specs.bf16_tflops,
+        specs_source="datasheet",
     )
 
 
