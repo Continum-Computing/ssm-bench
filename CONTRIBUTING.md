@@ -53,12 +53,11 @@ python -m ruff format --check .     # formatting
 
 `make setup`, `make test` and `make lint` also exist, but the Makefile hardcodes a POSIX virtualenv layout (`$(VENV)/bin`) and fails on Windows. Until #36 settles that, prefer the direct commands above, which is what CI uses.
 
-Two entry points in this file used to be documented as if they worked. They did not, so here is the honest version:
+`python profiling/visualize.py <results.json>` writes into the directory holding that JSON: four plots under `plots/` and one `benchmark_summary.txt` beside it. Pass `--run-dir` to write elsewhere. It needs no GPU, since everything is recomputed from stored data.
 
-- `python profiling/visualize.py <results.json>` exits 0 and writes nothing. The module has no `if __name__ == "__main__"` block and never imports argparse, so it cannot be run as a script. That is #48. Until it lands, call `generate_all_visualizations(results_path, run_dir)` from Python. It writes the four plots to `{run_dir}/plots/` and one `benchmark_summary.txt` to `{run_dir}/`.
-- `python profiling/run_benchmarks.py` does work, but needs an NVIDIA GPU.
+`python profiling/run_benchmarks.py` needs an NVIDIA GPU.
 
-A silent no-op is worse than a crash, because you walk away believing the plots now exist. This is why the A100 result set has no plots or summary.
+The visualize command used to exit 0 and write nothing, because the module had no entry point and never imported argparse. Worth knowing, because a silent no-op is worse than a crash: you walk away believing the plots now exist. That is how the A100 result set came to have no artifacts, and a test now runs the script as a subprocess so the entry point cannot vanish quietly again.
 
 CPU-only machines can run the correctness suite and the analysis tooling. GPU runs need Colab, Modal, or hardware you own; `model/modal_benchmark.py` is a worked example for Modal.
 
