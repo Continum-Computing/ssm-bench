@@ -248,18 +248,18 @@ def plot_roofline_model(results: dict, output_path: str = "roofline_model.png"):
     plt.plot(ai_range, mem_roofline, 'k--', label='Memory Bandwidth Limit', linewidth=2)
     plt.axhline(y=peak_compute, color='r', linestyle='--',
                 label=f'Compute Limit ({run_dtype})', linewidth=2)
-    
+
     # Plot data points
     if ssm_rec_points:
-        ai_rec, perf_rec = zip(*ssm_rec_points)
+        ai_rec, perf_rec = zip(*ssm_rec_points, strict=True)
         plt.scatter(ai_rec, perf_rec, c='blue', marker='o', s=100, label='SSM Recurrent', zorder=5)
-    
+
     if ssm_scan_points:
-        ai_scan, perf_scan = zip(*ssm_scan_points)
+        ai_scan, perf_scan = zip(*ssm_scan_points, strict=True)
         plt.scatter(ai_scan, perf_scan, c='green', marker='s', s=100, label='SSM Scan', zorder=5)
-    
+
     if attn_points:
-        ai_attn, perf_attn = zip(*attn_points)
+        ai_attn, perf_attn = zip(*attn_points, strict=True)
         plt.scatter(ai_attn, perf_attn, c='red', marker='^', s=100, label='Attention', zorder=5)
     
     plt.xlabel('Arithmetic Intensity (FLOP/Byte)', fontsize=12)
