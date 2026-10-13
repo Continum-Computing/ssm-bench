@@ -1,0 +1,63 @@
+================================================================================
+SSM vs Attention Benchmark Summary Report
+================================================================================
+
+GPU Information:
+  Name: NVIDIA A100-SXM4-40GB
+  Compute Capability: 8.0
+  Total Memory: 42.4 GB
+  Peak Memory Bandwidth: 1555 GB/s
+  Peak FP32 Performance: 19.5 TFLOPS
+  Peak BF16 Performance: 312.0 TFLOPS
+
+Benchmark Metadata:
+  Timestamp: 2026-10-10T11:56:30.561643
+  Python Version: 3.11.12
+  PyTorch Version: 2.14.1+cu130
+  CUDA Version: 13.0
+
+================================================================================
+Performance Summary
+================================================================================
+
+Average Latency (ms):
+  SSM Recurrent: 319.369 ms
+  SSM Scan:      413.016 ms
+  Attention:     0.233 ms
+
+Average Bandwidth Utilization (%):
+  SSM Recurrent: 0.1%
+  SSM Scan:      0.0%
+  Attention:     6.7%
+
+Average Compute Utilization (%):
+  SSM Recurrent: 0.0%
+  SSM Scan:      0.0%
+  Attention:     7.0%
+
+================================================================================
+Key Findings
+================================================================================
+
+Latency ratio (SSM relative to attention):
+  Recurrent: 1373.0x slower
+  Scan:      1775.5x slower
+
+GPU Utilization Gap:
+  SSM Recurrent bandwidth utilization: 0.1%
+  Attention bandwidth utilization:     6.7%
+  Gap: 6.6 percentage points
+
+Interpretation:
+  These figures describe the reference implementations in this
+  repo, not fused kernels. The SSM path is a Python for-loop over
+  time steps, so at batch size 1 its latency is dominated by kernel
+  launch overhead. Low utilization on both sides means neither
+  implementation saturates the device.
+
+  Nothing here supports or refutes an architectural mismatch. That
+  question needs strong baselines (FlashAttention-2, official Mamba
+  CUDA kernels, a fused Mamba block, CUDA graph capture) and energy
+  telemetry. See docs/whitepaper.md.
+
+================================================================================
