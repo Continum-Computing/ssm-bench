@@ -41,5 +41,5 @@
   "analysis": {
     "cross_gpu_comparison": "analysis/gpu_comparison_t4_vs_a100.md"
   },
-  "conclusion": "The GPU-SSM mismatch hypothesis is strongly confirmed on both T4 and A100. The performance gap widens on higher-end hardware, indicating a fundamental architectural mismatch that justifies custom SSM accelerator design (Kalman project)."
+  "conclusion": "Not concluded. These runs compare naive reference implementations on both sides (Python for-loop SSM vs plain matmul attention, batch size 1), so the measured gap is dominated by kernel launch overhead and does not test the hypothesis. The go/no-go decision is pending strong baselines: FlashAttention-2, official Mamba CUDA kernels, a fused Mamba block, CUDA graph capture, and pynvml energy telemetry. Downstream design work in the Kalman project is blocked on that decision. Corrected 2026-10-13; measured values in the result sets are unchanged."
 }
