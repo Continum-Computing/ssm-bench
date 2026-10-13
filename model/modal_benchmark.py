@@ -31,9 +31,9 @@ def run_benchmarks():
     ], check=True)
     
     os.chdir("ssm-bench")
-    
+
     # Run the benchmarks
-    result = subprocess.run([
+    subprocess.run([
         sys.executable, "profiling/run_benchmarks.py",
         "--seq-lens", "512", "1024", "2048", "4096",
         "--state-dims", "64", "128", "256",
@@ -43,11 +43,11 @@ def run_benchmarks():
         "--device", "0",
         "--output", "modal_benchmark_results.json"
     ], check=True)
-    
+
     # Read the results
     with open("modal_benchmark_results.json") as f:
         results = f.read()
-    
+
     return results
 
 @app.local_entrypoint()
