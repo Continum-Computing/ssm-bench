@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Read the whitepaper first
+    url: https://github.com/Continum-Computing/ssm-bench/blob/main/docs/whitepaper.md
+    about: What we are testing, what has been measured so far, and what the numbers do and do not support.
+  - name: Contribution requirements
+    url: https://github.com/Continum-Computing/ssm-bench/blob/main/CONTRIBUTING.md
+    about: Correctness checks, peak-spec rules, result layout, and what makes a baseline PR mergeable.
+  - name: Reproducing the published results
+    url: https://github.com/Continum-Computing/ssm-bench/blob/main/profiling/results/README.md
+    about: Directory layout, naming convention, and how to regenerate plots from stored data.
