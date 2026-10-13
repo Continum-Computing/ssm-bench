@@ -28,15 +28,21 @@ We ran benchmarks on two GPUs: Tesla T4 (via Google Colab) and A100-SXM4-40GB (v
 
 | | Tesla T4 | A100 |
 |---|---|---|
-| SSM vs attention latency | 100-200x slower | 1,000-1,500x slower |
-| SSM bandwidth utilization | 0.02-0.15% | 0.01-0.08% |
-| SSM compute utilization | < 0.2% | 0.006% |
-| SSM arithmetic intensity | 3-6 FLOP/byte | 3-6 FLOP/byte |
-| Attention arithmetic intensity | 146-229 FLOP/byte | 146-229 FLOP/byte |
+| SSM vs attention latency | 100-202x slower | 543-2,382x slower |
+| SSM bandwidth utilization | 0.05-0.42% | 0.012-0.11% |
+| SSM compute utilization | 0.012-0.049% | 0.0004-0.002% |
+| Attention bandwidth utilization | 1.62-3.28% | 1.33-12.3% |
+| Attention compute utilization | 9.4-29.7% | 0.97-14.1% |
+| SSM arithmetic intensity | 3.0-6.1 FLOP/byte | 3.0-6.1 FLOP/byte |
+| Attention arithmetic intensity | 146-230 FLOP/byte | 146-230 FLOP/byte |
 
-**What these numbers say.** At batch size 1 with a Python loop in the critical path, kernel launch overhead dominates the SSM measurement. Both sides sit far below the hardware limits, which is why the utilization columns are near zero for both. The arithmetic intensity rows carry more weight, since intensity is a property of the algorithm rather than of our implementation.
+Ranges span all 12 configurations per model type. Utilization is measured against the datasheet peak for that exact card and precision: 320 GB/s and 8.1 TFLOP/s for the T4, 1555 GB/s and 312 TFLOP/s of dense BF16 tensor throughput for the A100-SXM4-40GB.
 
-**What these numbers do not say.** They do not measure an architectural mismatch. This is naive SSM against naive attention, so most of the gap is our code, not the GPU. A fused Mamba kernel and FlashAttention-2 would both land somewhere completely different, and neither is in this table yet. The same caveat covers the "gap widens on better hardware" observation: a workload bound by launch overhead is not expected to benefit from extra bandwidth on any GPU.
+**What these numbers say.** At batch size 1 with a Python loop in the critical path, kernel launch overhead dominates the SSM measurement. Both sides sit far below the hardware limits. The arithmetic intensity rows carry the most weight, since intensity is a property of the algorithm rather than of our implementation.
+
+The A100 is 1.22x faster than the T4 on the SSM path and 13.96x faster on attention. Better hardware helping a large matmul roughly eleven times more than a launch-bound loop is the expected result.
+
+**What these numbers do not say.** They do not measure an architectural mismatch. This is naive SSM against naive attention, so most of the gap is our code, not the GPU. A fused Mamba kernel and FlashAttention-2 would both land somewhere completely different, and neither is in this table yet.
 
 **Go/no-go decision: pending.** We are not going to justify custom silicon on a comparison of naive implementations. The decision waits on strong baselines: FlashAttention-2 for attention, official Mamba CUDA kernels for the SSM path, CUDA graph capture to take launch overhead out of the decode measurement, and pynvml energy telemetry, since throughput-per-watt is the actual claim.
 

@@ -62,18 +62,20 @@ Batch size 1, bf16, no CUDA graphs.
 
 ## What we found
 
-**Tesla T4:**
-- SSM is 100-200x slower than attention
-- SSM uses 0.02-0.15% of bandwidth
-- SSM uses < 0.2% of compute
-- SSM arithmetic intensity: 3-6 FLOP/byte (memory-bound)
-- Attention arithmetic intensity: 146-229 FLOP/byte (compute-bound)
+**Tesla T4** (peaks: 320 GB/s, 8.1 TFLOP/s):
+- SSM is 100-202x slower than attention
+- SSM uses 0.05-0.42% of bandwidth
+- SSM uses 0.012-0.049% of compute
+- Attention uses 1.62-3.28% of bandwidth and 9.4-29.7% of compute
+- SSM arithmetic intensity: 3.0-6.1 FLOP/byte
+- Attention arithmetic intensity: 146-230 FLOP/byte
 
-**A100:**
-- SSM is 1,000-1,500x slower than attention
-- SSM uses 0.01-0.08% of bandwidth
-- SSM uses 0.006% of compute
-- Same arithmetic intensity
+**A100-SXM4-40GB** (peaks: 1555 GB/s, 312 TFLOP/s dense BF16 tensor):
+- SSM is 543-2,382x slower than attention
+- SSM uses 0.012-0.11% of bandwidth
+- SSM uses 0.0004-0.002% of compute
+- Attention uses 1.33-12.3% of bandwidth and 0.97-14.1% of compute
+- Same arithmetic intensity as T4
 
 Two things in there are worth keeping.
 
@@ -81,7 +83,9 @@ The arithmetic intensity numbers are properties of the algorithms, not of our co
 
 The near-zero utilization on both sides is also real, but it says something different than we first claimed. It says neither implementation is anywhere near the hardware's limits at batch size 1. Attention looks better only because one big matmul amortizes its launch cost, while the SSM loop pays it thousands of times.
 
-What does not survive: the claim that the gap widens on better hardware and therefore proves an architectural mismatch. Average SSM latency is identical on both GPUs (319ms), which is exactly what you expect when launch overhead dominates. A workload that never touches the memory system will not get faster when you add bandwidth, on any GPU. That's a property of our implementation, not a verdict on silicon.
+What does not survive: the claim that the gap widens on better hardware and therefore proves an architectural mismatch. Average SSM latency is 388.3 ms on T4 and 319.4 ms on A100, so the A100 is 1.22x faster on the SSM path and 13.96x faster on attention. An earlier version of this document said latency was identical on both GPUs at 319 ms. That came from a T4 metadata summary block that had been filled with the A100's averages. The raw per-configuration data was always correct.
+
+Better hardware helping a large-matmul workload eleven times more than a launch-bound loop is the expected result, not evidence about silicon.
 
 ## What would change our mind
 

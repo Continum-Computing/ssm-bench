@@ -24,37 +24,41 @@ The result: SSM appears 100-200x slower on T4 and 1,000-1,500x slower on A100, w
 
 ### Average Latency (all configurations)
 
-| Model | T4 | A100 | Speedup | Gap vs Attention |
+| Model | T4 | A100 | A100 speedup | Ratio to attention |
 |-------|----|----|---------|------------------|
-| SSM Recurrent | 319.4 ms | 319.4 ms | 1.0x | 1,371x slower |
-| SSM Scan | 413.0 ms | 413.0 ms | 1.0x | 1,774x slower |
-| Attention | 0.23 ms | 0.23 ms | 1.0x | baseline |
+| SSM Recurrent | 388.312 ms | 319.369 ms | 1.22x | T4 120x, A100 1,373x |
+| SSM Scan | 497.913 ms | 413.016 ms | 1.21x | T4 153x, A100 1,776x |
+| Attention | 3.247 ms | 0.233 ms | 13.96x | baseline |
 
-The A100 provides no speedup for the SSM path despite 2.3x the bandwidth and 3x the BF16 compute.
+The A100 is faster on every path, but not by the same amount. Attention gains 13.96x from the better GPU while the SSM path gains 1.22x.
 
-That is expected for a launch-bound workload and it is the reason this dataset cannot support an architectural claim. When per-step Python and launch overhead set the floor, adding bandwidth or FLOPs changes nothing. The same flat scaling would appear on any GPU, including a much faster one.
+That asymmetry is the honest form of what an earlier draft called "no speedup at all". The earlier draft was reading a corrupted T4 summary block that had been filled with the A100's averages, which made the two GPUs look identical at 319.4 ms. The T4's own raw data gives 388.312 ms. Each `metadata.json` now carries a `summary_repair` block listing every field whose stored value contradicted its raw data.
+
+A launch-bound workload gaining 1.22x while a large-matmul workload gains 13.96x is what better hardware is expected to do, and it is not evidence about architecture. When per-step Python and launch overhead set the floor, extra bandwidth and FLOPs buy very little.
 
 ### Bandwidth Utilization
 
 | Model | T4 | A100 |
 |-------|----|----|
-| SSM Recurrent | 0.02-0.15% | 0.01-0.08% |
-| SSM Scan | 0.02-0.11% | 0.01-0.06% |
-| Attention | 0.60-1.15% | 1.25-9.30% |
+| SSM Recurrent | 0.062-0.415% | 0.015-0.106% |
+| SSM Scan | 0.051-0.321% | 0.012-0.084% |
+| Attention | 1.62-3.28% | 1.33-12.29% |
 
-SSM bandwidth utilization is lower on A100 (0.15% to 0.08%) while attention utilization rises (1.15% to 9.30%).
+Peaks: T4 320 GB/s, A100-SXM4-40GB 1555 GB/s. An earlier version of this table divided by 900 and 2039 GB/s, which understated T4 utilization by 2.8x and A100 by 1.3x.
 
-Read carefully: the SSM percentage falls because the denominator grew, not because the workload got worse. Achieved GB/s for SSM is roughly flat across both GPUs (1.33 GB/s on T4, 1.53 GB/s on A100 at seq_len=4096), which again points at a launch-bound floor rather than a bandwidth-bound one. Attention does move real data (10.0 GB/s to 189.6 GB/s) because a single large matmul amortizes its launch cost.
+The SSM percentage is lower on A100 because the denominator grew, not because the workload got worse. Achieved GB/s for SSM is close on both GPUs (1.33 GB/s on T4, 1.53 GB/s on A100 at seq_len=4096), which points at a launch-bound floor rather than a bandwidth-bound one. Attention does move real data (10.0 GB/s to 189.6 GB/s) because a single large matmul amortizes its launch cost.
 
 ### Compute Utilization
 
 | Model | T4 | A100 |
 |-------|----|----|
-| SSM Recurrent | 0.005-0.015% | 0.002-0.006% |
-| SSM Scan | 0.004-0.012% | 0.002-0.005% |
-| Attention | 3.0-9.2% | 4.8-55.5% |
+| SSM Recurrent | 0.0149-0.049% | 0.0004-0.002% |
+| SSM Scan | 0.0123-0.038% | 0.0004-0.001% |
+| Attention | 9.38-29.74% | 0.97-14.06% |
 
-Attention reaches 55.5% of peak BF16 on A100 at the largest configuration. The SSM path stays under 0.02% everywhere. Near-zero utilization here means the GPU is idle between launches, not that SSMs inherently cannot use a GPU.
+Peaks: T4 8.1 TFLOP/s. Turing has no BF16 tensor core path, so a bf16 run there is bounded by the FP32 rate. A100 312 TFLOP/s of dense BF16 tensor throughput. An earlier version divided the A100 by 78.0 TFLOPS, a non-tensor rate, which is why it reported attention reaching 55.5%. Against the correct ceiling it reaches 14.1%.
+
+The SSM path stays under 0.05% everywhere. Near-zero utilization means the GPU is idle between launches, not that SSMs inherently cannot use a GPU.
 
 ## Detailed Configuration Comparison
 
