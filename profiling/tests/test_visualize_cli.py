@@ -16,11 +16,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = REPO_ROOT / "profiling" / "visualize.py"
 A100_RESULTS = (
-    REPO_ROOT
-    / "profiling"
-    / "results"
-    / "a100-modal-2026-10-10"
-    / "benchmark_results.json"
+    REPO_ROOT / "profiling" / "results" / "a100-modal-2026-10-10" / "benchmark_results.json"
 )
 
 EXPECTED_PLOTS = (
