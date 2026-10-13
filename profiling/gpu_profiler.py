@@ -17,6 +17,8 @@ from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
 import json
 
+from profiling.gpu_specs_db import lookup_peak_specs
+
 
 @dataclass
 class GPUSpecs:
