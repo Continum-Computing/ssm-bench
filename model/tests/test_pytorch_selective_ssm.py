@@ -6,23 +6,33 @@ profiling) produces identical outputs to the NumPy reference (which is the
 ground truth).
 """
 
-import torch
 import numpy as np
-import pytest
+import torch
 from numpy.testing import assert_allclose
 
-from model.reference.selective_ssm import (
-    discretize_zoh as discretize_zoh_numpy,
-    selective_ssm_recurrent as selective_ssm_recurrent_numpy,
-    selective_ssm_scan as selective_ssm_scan_numpy,
-    compute_delta as compute_delta_numpy,
+from model.pytorch_impl.selective_ssm import (
+    compute_delta as compute_delta_torch,
 )
-
 from model.pytorch_impl.selective_ssm import (
     discretize_zoh as discretize_zoh_torch,
+)
+from model.pytorch_impl.selective_ssm import (
     selective_ssm_recurrent as selective_ssm_recurrent_torch,
+)
+from model.pytorch_impl.selective_ssm import (
     selective_ssm_scan as selective_ssm_scan_torch,
-    compute_delta as compute_delta_torch,
+)
+from model.reference.selective_ssm import (
+    compute_delta as compute_delta_numpy,
+)
+from model.reference.selective_ssm import (
+    discretize_zoh as discretize_zoh_numpy,
+)
+from model.reference.selective_ssm import (
+    selective_ssm_recurrent as selective_ssm_recurrent_numpy,
+)
+from model.reference.selective_ssm import (
+    selective_ssm_scan as selective_ssm_scan_numpy,
 )
 
 
@@ -102,9 +112,7 @@ class TestSelectiveSSMRecurrent:
         D_torch = torch.from_numpy(D_np.copy())
         delta_torch = torch.from_numpy(delta_np.copy())
 
-        y_np, x_final_np = selective_ssm_recurrent_numpy(
-            u_np, A_np, B_np, C_np, D_np, delta_np
-        )
+        y_np, x_final_np = selective_ssm_recurrent_numpy(u_np, A_np, B_np, C_np, D_np, delta_np)
         y_torch, x_final_torch = selective_ssm_recurrent_torch(
             u_torch, A_torch, B_torch, C_torch, D_torch, delta_torch
         )
@@ -174,9 +182,7 @@ class TestSelectiveSSMScan:
         D_torch = torch.from_numpy(D_np.copy())
         delta_torch = torch.from_numpy(delta_np.copy())
 
-        y_np, x_final_np = selective_ssm_scan_numpy(
-            u_np, A_np, B_np, C_np, D_np, delta_np
-        )
+        y_np, x_final_np = selective_ssm_scan_numpy(u_np, A_np, B_np, C_np, D_np, delta_np)
         y_torch, x_final_torch = selective_ssm_scan_torch(
             u_torch, A_torch, B_torch, C_torch, D_torch, delta_torch
         )
@@ -207,9 +213,7 @@ class TestSelectiveSSMScan:
         D_torch = torch.from_numpy(D_np.copy())
         delta_torch = torch.from_numpy(delta_np.copy())
 
-        y_np, x_final_np = selective_ssm_scan_numpy(
-            u_np, A_np, B_np, C_np, D_np, delta_np
-        )
+        y_np, x_final_np = selective_ssm_scan_numpy(u_np, A_np, B_np, C_np, D_np, delta_np)
         y_torch, x_final_torch = selective_ssm_scan_torch(
             u_torch, A_torch, B_torch, C_torch, D_torch, delta_torch
         )
@@ -248,9 +252,7 @@ class TestEndToEndPipeline:
 
         # NumPy pipeline
         delta_np = compute_delta_numpy(u_np, W_delta_np, b_delta_np)
-        y_np, x_final_np = selective_ssm_recurrent_numpy(
-            u_np, A_np, B_np, C_np, D_np, delta_np
-        )
+        y_np, x_final_np = selective_ssm_recurrent_numpy(u_np, A_np, B_np, C_np, D_np, delta_np)
 
         # PyTorch pipeline
         delta_torch = compute_delta_torch(u_torch, W_delta_torch, b_delta_torch)
@@ -281,9 +283,7 @@ class TestPyTorchSpecificFeatures:
         delta = torch.abs(torch.randn(seq_len, state_dim)) + 0.1
 
         # Test on CPU
-        y_cpu, x_cpu = selective_ssm_recurrent_torch(
-            u, A, B, C, D, delta
-        )
+        y_cpu, x_cpu = selective_ssm_recurrent_torch(u, A, B, C, D, delta)
         assert y_cpu.device.type == "cpu"
         assert x_cpu.device.type == "cpu"
 

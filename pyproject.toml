@@ -59,6 +59,12 @@ select = [
 ]
 ignore = [
     "E501",  # line too long (handled by formatter)
+    # A, B, C, D and the discretized A_bar, B_bar are the state-space matrices
+    # from the SSM literature. The reference implementations keep that spelling
+    # so they can be read line by line against the papers they implement.
+    # Lowercasing them would make the code harder to check, not tidier.
+    "N803",  # argument name should be lowercase
+    "N806",  # variable in function should be lowercase
 ]
 
 [tool.ruff.lint.isort]

@@ -17,11 +17,12 @@ picked up RTX 2080 Ti numbers and every T4 utilization percentage came
 out wrong.
 """
 
-from typing import Dict, NamedTuple, Optional
+from typing import NamedTuple
 
 
 class PeakSpecs(NamedTuple):
     """Theoretical peak throughput for one GPU model."""
+
     memory_bandwidth_gb_s: float
     fp32_tflops: float
     fp16_tensor_tflops: float
@@ -34,33 +35,29 @@ class PeakSpecs(NamedTuple):
 GPU_PEAK_SPECS = [
     # Turing. Tensor cores do FP16 only, so a bf16 run lands on the FP32
     # CUDA cores and the honest ceiling is the FP32 rate.
-    ("T4", PeakSpecs(320, 8.1, 65.0, 8.1,
-                     "Turing, no BF16 tensor core path; bf16 ceiling is FP32")),
-
+    (
+        "T4",
+        PeakSpecs(320, 8.1, 65.0, 8.1, "Turing, no BF16 tensor core path; bf16 ceiling is FP32"),
+    ),
     ("A100-SXM4-80GB", PeakSpecs(2039, 19.5, 312.0, 312.0, "Ampere SXM, 80GB HBM2e")),
     ("A100-SXM4-40GB", PeakSpecs(1555, 19.5, 312.0, 312.0, "Ampere SXM, 40GB HBM2e")),
     ("A100-PCIE-80GB", PeakSpecs(2039, 19.5, 312.0, 312.0, "Ampere PCIe, 80GB")),
     ("A100-PCIE-40GB", PeakSpecs(1555, 19.5, 312.0, 312.0, "Ampere PCIe, 40GB")),
     ("A100 80GB", PeakSpecs(2039, 19.5, 312.0, 312.0, "Ampere, 80GB")),
     ("A100", PeakSpecs(1555, 19.5, 312.0, 312.0, "Ampere, assuming 40GB SXM")),
-
     ("H100 PCIe", PeakSpecs(2039, 51.0, 756.0, 756.0, "Hopper PCIe")),
     ("H100", PeakSpecs(3350, 67.0, 989.0, 989.0, "Hopper SXM, HBM3")),
-
     ("L40S", PeakSpecs(864, 91.6, 362.0, 362.0, "Ada Lovelace, GDDR6")),
     ("L4", PeakSpecs(300, 30.3, 121.0, 121.0, "Ada Lovelace, low profile")),
-
     # Volta. No BF16 tensor core path either.
     ("V100S", PeakSpecs(1134, 16.4, 130.0, 16.4, "Volta, no BF16 tensor core path")),
     ("V100", PeakSpecs(900, 15.7, 125.0, 15.7, "Volta SXM2, no BF16 tensor core path")),
-
     ("RTX 3090", PeakSpecs(936, 35.6, 142.0, 142.0, "Ampere consumer")),
-    ("RTX 2080 TI", PeakSpecs(616, 13.4, 26.9, 13.4,
-                              "Turing, no BF16 tensor core path")),
+    ("RTX 2080 TI", PeakSpecs(616, 13.4, 26.9, 13.4, "Turing, no BF16 tensor core path")),
 ]
 
 
-def lookup_peak_specs(device_name: str) -> Optional[PeakSpecs]:
+def lookup_peak_specs(device_name: str) -> PeakSpecs | None:
     """
     Find datasheet peaks for a CUDA device name.
 
@@ -96,7 +93,7 @@ def peak_for_dtype(specs: PeakSpecs, dtype: str) -> float:
     return specs.bf16_tflops
 
 
-def specs_to_dict(specs: PeakSpecs) -> Dict:
+def specs_to_dict(specs: PeakSpecs) -> dict:
     """Serialize peaks for embedding in result metadata."""
     return {
         "memory_bandwidth_gb_s": specs.memory_bandwidth_gb_s,

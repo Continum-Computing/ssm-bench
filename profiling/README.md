@@ -101,12 +101,12 @@ Output = Attention · W_O
 
 ```python
 BenchmarkConfig(
-    seq_len=1024,        # Sequence length
-    batch_size=1,        # Batch size (currently fixed at 1)
-    state_dim=128,       # SSM state dimension
-    input_dim=256,       # Input dimension
-    output_dim=256,      # Output dimension
-    dtype="bf16",        # Data type: "fp32", "fp16", "bf16"
+    seq_len=1024,  # Sequence length
+    batch_size=1,  # Batch size (currently fixed at 1)
+    state_dim=128,  # SSM state dimension
+    input_dim=256,  # Input dimension
+    output_dim=256,  # Output dimension
+    dtype="bf16",  # Data type: "fp32", "fp16", "bf16"
 )
 ```
 
