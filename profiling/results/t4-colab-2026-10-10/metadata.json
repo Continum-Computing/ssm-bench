@@ -7,9 +7,12 @@
       "name": "Tesla T4",
       "compute_capability": "7.5",
       "memory_gb": 15.64,
-      "peak_bandwidth_gb_s": 900,
-      "peak_fp32_tflops": 13.0,
-      "peak_bf16_tflops": 26.0
+      "peak_bandwidth_gb_s": 320,
+      "peak_fp32_tflops": 8.1,
+      "peak_bf16_tflops": 8.1,
+      "peak_fp16_tflops": 65.0,
+      "specs_source": "datasheet",
+      "specs_note": "Turing, no BF16 tensor core path; bf16 ceiling is FP32"
     }
   },
   "software": {
@@ -18,8 +21,17 @@
     "cuda": "13.0"
   },
   "configuration": {
-    "sequence_lengths": [512, 1024, 2048, 4096],
-    "state_dimensions": [64, 128, 256],
+    "sequence_lengths": [
+      512,
+      1024,
+      2048,
+      4096
+    ],
+    "state_dimensions": [
+      64,
+      128,
+      256
+    ],
     "input_dim": 256,
     "output_dim": 256,
     "dtype": "bf16",
@@ -29,14 +41,18 @@
   },
   "summary": {
     "total_configurations": 36,
-    "models_tested": ["ssm_recurrent", "ssm_scan", "attention"],
-    "avg_ssm_recurrent_latency_ms": 319.4,
-    "avg_ssm_scan_latency_ms": 413.0,
-    "avg_attention_latency_ms": 0.23,
-    "avg_ssm_bandwidth_utilization_pct": 0.06,
-    "avg_attention_bandwidth_utilization_pct": 0.82,
-    "avg_ssm_compute_utilization_pct": 0.01,
-    "avg_attention_compute_utilization_pct": 5.1
+    "models_tested": [
+      "attention",
+      "ssm_recurrent",
+      "ssm_scan"
+    ],
+    "avg_ssm_recurrent_latency_ms": 388.312,
+    "avg_ssm_scan_latency_ms": 497.913,
+    "avg_attention_latency_ms": 3.247,
+    "avg_ssm_bandwidth_utilization_pct": 0.2069,
+    "avg_attention_bandwidth_utilization_pct": 2.4749,
+    "avg_ssm_compute_utilization_pct": 0.02922,
+    "avg_attention_compute_utilization_pct": 19.489
   },
   "key_findings": "Naive reference SSM (Python for-loop) is 100-200x slower than naive matmul attention on T4, with both sides under 0.2% of memory bandwidth and compute. Corrected 2026-10-13: the gap measures kernel launch overhead, not architectural fit, and does not confirm the hypothesis. Measured values in 'summary' are unchanged.",
   "files": {
@@ -47,6 +63,77 @@
       "bandwidth": "plots/bandwidth_utilization.png",
       "compute": "plots/compute_utilization.png",
       "roofline": "plots/roofline_model.png"
+    }
+  },
+  "summary_repair": {
+    "date": "2026-10-13",
+    "grouping_convention": {
+      "avg_ssm_*": "ssm_recurrent only",
+      "avg_attention_*": "attention only"
+    },
+    "fields_that_contradicted_raw_data": {
+      "total_configurations": {
+        "stored": 36,
+        "recomputed": 36
+      },
+      "models_tested": {
+        "stored": [
+          "ssm_recurrent",
+          "ssm_scan",
+          "attention"
+        ],
+        "recomputed": [
+          "attention",
+          "ssm_recurrent",
+          "ssm_scan"
+        ]
+      },
+      "avg_ssm_recurrent_latency_ms": {
+        "stored": 319.4,
+        "recomputed": 388.312
+      },
+      "avg_ssm_scan_latency_ms": {
+        "stored": 413.0,
+        "recomputed": 497.913
+      },
+      "avg_attention_latency_ms": {
+        "stored": 0.23,
+        "recomputed": 3.247
+      },
+      "avg_ssm_bandwidth_utilization_pct": {
+        "stored": 0.06,
+        "recomputed": 0.2069
+      },
+      "avg_attention_bandwidth_utilization_pct": {
+        "stored": 0.82,
+        "recomputed": 2.4749
+      },
+      "avg_ssm_compute_utilization_pct": {
+        "stored": 0.01,
+        "recomputed": 0.02922
+      },
+      "avg_attention_compute_utilization_pct": {
+        "stored": 5.1,
+        "recomputed": 19.489
+      }
+    },
+    "note": "Recomputed from benchmark_results.json. Fields listed above held values that did not match this run's own raw data."
+  },
+  "peak_correction": {
+    "date": "2026-10-13",
+    "reason": "Peaks were originally looked up by compute capability. The Tesla T4 shares capability 7.5 with the RTX 2080 Ti and inherited its specs; the A100 40GB run used the 80GB bandwidth and a non-tensor BF16 rate. Measured values are unchanged; only derived utilization percentages and the peaks they are divided by were corrected.",
+    "previous_peaks": {
+      "memory_bandwidth_gb_s": 900,
+      "fp32_tflops": 13.0,
+      "fp16_tflops": 26.0,
+      "bf16_tflops": 26.0
+    },
+    "corrected_peaks": {
+      "memory_bandwidth_gb_s": 320,
+      "fp32_tflops": 8.1,
+      "fp16_tflops": 65.0,
+      "bf16_tflops": 8.1,
+      "note": "Turing, no BF16 tensor core path; bf16 ceiling is FP32"
     }
   }
 }

@@ -228,14 +228,26 @@ def plot_roofline_model(results: Dict, output_path: str = "roofline_model.png"):
     
     # Plot roofline
     peak_bw = gpu_info['memory_bandwidth_gb_s']
-    peak_compute = gpu_info['fp32_tflops']
-    
+
+    # The compute ceiling has to match the precision the kernels actually ran
+    # at. Plotting an FP32 ceiling over bf16 points understates the roof by 16x
+    # on A100 and misplaces every point relative to it.
+    dtypes = {r['config']['dtype'] for r in data}
+    run_dtype = dtypes.pop() if len(dtypes) == 1 else 'fp32'
+    if run_dtype == 'fp32':
+        peak_compute = gpu_info['fp32_tflops']
+    elif run_dtype == 'fp16':
+        peak_compute = gpu_info.get('fp16_tflops', gpu_info['fp32_tflops'])
+    else:
+        peak_compute = gpu_info.get('bf16_tflops', gpu_info['fp32_tflops'])
+
     # Memory bandwidth roofline
     ai_range = np.logspace(-1, 3, 100)
     mem_roofline = peak_bw * ai_range / 1000  # Convert to TFLOPS
-    
+
     plt.plot(ai_range, mem_roofline, 'k--', label='Memory Bandwidth Limit', linewidth=2)
-    plt.axhline(y=peak_compute, color='r', linestyle='--', label='Compute Limit', linewidth=2)
+    plt.axhline(y=peak_compute, color='r', linestyle='--',
+                label=f'Compute Limit ({run_dtype})', linewidth=2)
     
     # Plot data points
     if ssm_rec_points:
@@ -341,13 +353,15 @@ def generate_summary_report(results: Dict, output_path: str = "benchmark_summary
         f.write("Key Findings\n")
         f.write("=" * 80 + "\n\n")
         
-        # Calculate speedup
-        speedup_rec = avg_attn / avg_ssm_rec
-        speedup_scan = avg_attn / avg_ssm_scan
-        
-        f.write(f"SSM Speedup vs Attention:\n")
-        f.write(f"  Recurrent: {speedup_rec:.2f}x faster\n")
-        f.write(f"  Scan:      {speedup_scan:.2f}x faster\n")
+        # Latency ratio, SSM relative to attention. The previous version
+        # computed attention / SSM and printed it as "SSM speedup ... faster",
+        # which yielded values below 1x labelled as a speedup.
+        ratio_rec = avg_ssm_rec / avg_attn
+        ratio_scan = avg_ssm_scan / avg_attn
+
+        f.write("Latency ratio (SSM relative to attention):\n")
+        f.write(f"  Recurrent: {ratio_rec:.1f}x slower\n")
+        f.write(f"  Scan:      {ratio_scan:.1f}x slower\n")
         f.write("\n")
         
         # GPU utilization gap
@@ -358,14 +372,16 @@ def generate_summary_report(results: Dict, output_path: str = "benchmark_summary
         f.write("\n")
         
         f.write("Interpretation:\n")
-        if avg_ssm_rec_bw < avg_attn_bw * 0.7:
-            f.write("  ✓ SSM shows significantly lower bandwidth utilization than attention,\n")
-            f.write("    suggesting GPUs are not optimized for SSM workloads.\n")
-            f.write("    This supports the hypothesis for custom SSM accelerator design.\n")
-        else:
-            f.write("  ✗ SSM bandwidth utilization is comparable to attention,\n")
-            f.write("    suggesting GPUs handle SSM workloads reasonably well.\n")
-            f.write("    Custom accelerator may not provide significant benefits.\n")
+        f.write("  These figures describe the reference implementations in this\n")
+        f.write("  repo, not fused kernels. The SSM path is a Python for-loop over\n")
+        f.write("  time steps, so at batch size 1 its latency is dominated by kernel\n")
+        f.write("  launch overhead. Low utilization on both sides means neither\n")
+        f.write("  implementation saturates the device.\n")
+        f.write("\n")
+        f.write("  Nothing here supports or refutes an architectural mismatch. That\n")
+        f.write("  question needs strong baselines (FlashAttention-2, official Mamba\n")
+        f.write("  CUDA kernels, a fused Mamba block, CUDA graph capture) and energy\n")
+        f.write("  telemetry. See docs/whitepaper.md.\n")
         
         f.write("\n")
         f.write("=" * 80 + "\n")

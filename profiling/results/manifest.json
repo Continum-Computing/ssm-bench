@@ -11,7 +11,7 @@
       "date": "2026-10-10",
       "configurations": 36,
       "path": "t4-colab-2026-10-10/",
-      "key_findings": "SSM 100-200x slower than attention, <0.2% bandwidth utilization",
+      "key_findings": "Naive reference SSM is 100-202x slower than naive matmul attention. SSM uses 0.05-0.42% of the 320 GB/s peak and 0.012-0.049% of the 8.1 TFLOP/s peak. Measures launch overhead, not architectural fit.",
       "files": {
         "metadata": "metadata.json",
         "raw_data": "benchmark_results.json",
@@ -31,7 +31,7 @@
       "date": "2026-10-10",
       "configurations": 36,
       "path": "a100-modal-2026-10-10/",
-      "key_findings": "SSM gap widens on A100 — 1000-1500x slower, <0.1% bandwidth utilization",
+      "key_findings": "Naive reference SSM is 543-2,382x slower than naive matmul attention. SSM uses 0.012-0.11% of the 1555 GB/s peak and 0.0004-0.002% of the 312 TFLOP/s BF16 tensor peak. The A100 is 1.22x faster than the T4 on SSM and 13.96x faster on attention.",
       "files": {
         "metadata": "metadata.json",
         "raw_data": "benchmark_results.json"

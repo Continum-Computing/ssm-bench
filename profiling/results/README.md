@@ -174,26 +174,28 @@ python model/modal_benchmark.py
 > **Correction, 2026-10-13.** These summaries describe reference implementations, not tuned kernels. The SSM path is a Python for-loop over time steps (one small kernel launch per step) and the attention path is a plain matmul-softmax-matmul, both at batch size 1. Most of the latency gap below is launch overhead. Full reasoning in [analysis/gpu_comparison_t4_vs_a100.md](analysis/gpu_comparison_t4_vs_a100.md).
 
 ### Tesla T4 (Google Colab)
-- **SSM latency**: 100-200x slower than attention
-- **Bandwidth utilization**: <0.2% of theoretical peak
-- **Compute utilization**: <0.02% of theoretical peak
-- **Arithmetic intensity**: 3-6 FLOP/byte
+- **SSM latency**: 100-202x slower than attention
+- **Bandwidth utilization**: 0.05-0.42% of the 320 GB/s peak
+- **Compute utilization**: 0.012-0.049% of the 8.1 TFLOP/s peak
+- **Arithmetic intensity**: 3.0-6.1 FLOP/byte
 
 ### NVIDIA A100 (Modal)
-- **SSM latency**: 1000-1500x slower than attention
-- **Bandwidth utilization**: <0.1% of theoretical peak
-- **Compute utilization**: <0.01% of theoretical peak
-- **Arithmetic intensity**: 3-6 FLOP/byte
+- **SSM latency**: 543-2,382x slower than attention
+- **Bandwidth utilization**: 0.012-0.11% of the 1555 GB/s peak
+- **Compute utilization**: 0.0004-0.002% of the 312 TFLOP/s BF16 tensor peak
+- **Arithmetic intensity**: 3.0-6.1 FLOP/byte
 
 ### Cross-GPU Comparison
-- T4: SSM uses 0.02-0.15% of bandwidth
-- A100: SSM uses 0.01-0.08% of bandwidth
-- Attention scales on A100 (up to 9.3% bandwidth utilization)
-- SSM latency is flat across both GPUs (319ms average)
+- Average SSM recurrent latency: 388.312 ms on T4, 319.369 ms on A100. The A100 is 1.22x faster
+- Average attention latency: 3.247 ms on T4, 0.233 ms on A100. The A100 is 13.96x faster
+- SSM bandwidth utilization: 0.05-0.42% on T4, 0.012-0.11% on A100
+- Attention bandwidth utilization: 1.62-3.28% on T4, 1.33-12.3% on A100
 
-The flat SSM latency is what rules out an architectural reading. A workload that never approaches the memory system will not speed up when you add bandwidth, so identical timings on a 2.3x faster GPU point at a launch-bound floor in our implementation rather than at the silicon. The near-zero utilization on both sides says the same thing: neither implementation saturates anything.
+Better hardware helps the attention path roughly eleven times more than it helps the SSM path. That asymmetry is real, but it is not evidence about silicon. A workload whose floor is set by Python-loop kernel launches gains almost nothing from extra bandwidth or FLOPs on any GPU, and the near-zero utilization on both sides says neither implementation comes close to saturating the device.
 
-The one result that survives the caveat is arithmetic intensity (3-6 FLOP/byte for SSM, 146-230 for attention), because it follows from the algorithms rather than from our code.
+An earlier version of this summary stated that SSM latency was identical on both GPUs at 319 ms. It was not. The T4 metadata summary block had been populated with the A100's averages. The T4's own raw data gives 388.312 ms. Each `metadata.json` now carries a `summary_repair` block naming every field whose stored value contradicted its raw data.
+
+The result that survives every caveat is arithmetic intensity (3.0-6.1 FLOP/byte for SSM, 146-230 for attention), because it follows from the algorithms rather than from our code or from the peak constants.
 
 Whether the GPU-SSM mismatch is architectural is still an open question. It needs fused kernels on both sides (Mamba CUDA kernels, FlashAttention-2), CUDA graph capture for decode, and energy telemetry before it can be answered.
 
