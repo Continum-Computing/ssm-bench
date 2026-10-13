@@ -179,7 +179,10 @@ def correct_result_set(run_dir: Path, dry_run: bool = False) -> Dict:
     if meta_path.exists():
         _correct_metadata_file(meta_path, raw, specs, old_peaks, results, original)
 
-    _regenerate_outputs(run_dir, raw)
+    # Regenerate from the file just written, not from the in-memory copy.
+    from profiling.visualize import generate_all_visualizations
+
+    generate_all_visualizations(str(raw_path), str(run_dir))
 
     return report
 
@@ -281,26 +284,6 @@ def _correct_metadata_file(meta_path: Path, raw: Dict, specs, old_peaks: Dict,
     meta_path.write_text(json.dumps(meta, indent=2) + "\n")
 
     return contradicted
-
-
-def _regenerate_outputs(run_dir: Path, raw: Dict) -> None:
-    """Rebuild plots and the text summary from the corrected results."""
-    from profiling.visualize import (
-        generate_summary_report,
-        plot_bandwidth_utilization,
-        plot_compute_utilization,
-        plot_latency_vs_sequence_length,
-        plot_roofline_model,
-    )
-
-    plots_dir = run_dir / "plots"
-    plots_dir.mkdir(exist_ok=True)
-
-    plot_latency_vs_sequence_length(raw, str(plots_dir / "latency_vs_seq_len.png"))
-    plot_bandwidth_utilization(raw, str(plots_dir / "bandwidth_utilization.png"))
-    plot_compute_utilization(raw, str(plots_dir / "compute_utilization.png"))
-    plot_roofline_model(raw, str(plots_dir / "roofline_model.png"))
-    generate_summary_report(raw, str(run_dir / "benchmark_summary.txt"))
 
 
 def main() -> int:

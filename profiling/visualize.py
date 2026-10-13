@@ -389,28 +389,36 @@ def generate_summary_report(results: Dict, output_path: str = "benchmark_summary
     print(f"Saved summary report to {output_path}")
 
 
-def generate_all_visualizations(results_path: str, output_dir: str = "profiling/results"):
+def generate_all_visualizations(results_path: str, run_dir: str = "profiling/results"):
     """
     Generate all visualizations and reports from benchmark results.
-    
+
+    Writes the four plots to {run_dir}/plots/ and the text summary to
+    {run_dir}/benchmark_summary.txt, which is the layout manifest.json
+    describes. The summary stays out of plots/ so a result set holds one
+    copy; a second copy under plots/ went stale during the 2026-10-13
+    peak correction because nothing regenerated it.
+
     Args:
         results_path: Path to benchmark results JSON
-        output_dir: Directory to save outputs
+        run_dir: Result set directory to write into
     """
     import os
-    os.makedirs(output_dir, exist_ok=True)
-    
+
+    plots_dir = os.path.join(run_dir, "plots")
+    os.makedirs(plots_dir, exist_ok=True)
+
     results = load_results(results_path)
-    
+
     print("Generating visualizations...")
     print()
-    
-    plot_latency_vs_sequence_length(results, f"{output_dir}/latency_vs_seq_len.png")
-    plot_bandwidth_utilization(results, f"{output_dir}/bandwidth_utilization.png")
-    plot_compute_utilization(results, f"{output_dir}/compute_utilization.png")
-    plot_roofline_model(results, f"{output_dir}/roofline_model.png")
-    generate_summary_report(results, f"{output_dir}/benchmark_summary.txt")
-    
+
+    plot_latency_vs_sequence_length(results, os.path.join(plots_dir, "latency_vs_seq_len.png"))
+    plot_bandwidth_utilization(results, os.path.join(plots_dir, "bandwidth_utilization.png"))
+    plot_compute_utilization(results, os.path.join(plots_dir, "compute_utilization.png"))
+    plot_roofline_model(results, os.path.join(plots_dir, "roofline_model.png"))
+    generate_summary_report(results, os.path.join(run_dir, "benchmark_summary.txt"))
+
     print()
     print("All visualizations generated successfully!")
-    print(f"Output directory: {output_dir}")
+    print(f"Result set directory: {run_dir}")
