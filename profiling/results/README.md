@@ -171,29 +171,36 @@ python model/modal_benchmark.py
 
 ## Key Findings Summary
 
+> **Correction, 2026-10-13.** These summaries describe reference implementations, not tuned kernels. The SSM path is a Python for-loop over time steps (one small kernel launch per step) and the attention path is a plain matmul-softmax-matmul, both at batch size 1. Most of the latency gap below is launch overhead. Full reasoning in [analysis/gpu_comparison_t4_vs_a100.md](analysis/gpu_comparison_t4_vs_a100.md).
+
 ### Tesla T4 (Google Colab)
 - **SSM latency**: 100-200x slower than attention
 - **Bandwidth utilization**: <0.2% of theoretical peak
 - **Compute utilization**: <0.02% of theoretical peak
-- **Arithmetic intensity**: 3-6 FLOP/byte (severely memory-bound)
+- **Arithmetic intensity**: 3-6 FLOP/byte
 
 ### NVIDIA A100 (Modal)
 - **SSM latency**: 1000-1500x slower than attention
 - **Bandwidth utilization**: <0.1% of theoretical peak
 - **Compute utilization**: <0.01% of theoretical peak
-- **Arithmetic intensity**: 3-6 FLOP/byte (severely memory-bound)
+- **Arithmetic intensity**: 3-6 FLOP/byte
 
 ### Cross-GPU Comparison
-The performance gap **widens** on higher-end hardware:
 - T4: SSM uses 0.02-0.15% of bandwidth
 - A100: SSM uses 0.01-0.08% of bandwidth
-- Attention scales dramatically on A100 (up to 9.3% bandwidth utilization)
+- Attention scales on A100 (up to 9.3% bandwidth utilization)
+- SSM latency is flat across both GPUs (319ms average)
 
-This confirms the GPU-SSM mismatch is a **fundamental architectural issue**, not a temporary optimization problem.
+The flat SSM latency is what rules out an architectural reading. A workload that never approaches the memory system will not speed up when you add bandwidth, so identical timings on a 2.3x faster GPU point at a launch-bound floor in our implementation rather than at the silicon. The near-zero utilization on both sides says the same thing: neither implementation saturates anything.
+
+The one result that survives the caveat is arithmetic intensity (3-6 FLOP/byte for SSM, 146-230 for attention), because it follows from the algorithms rather than from our code.
+
+Whether the GPU-SSM mismatch is architectural is still an open question. It needs fused kernels on both sides (Mamba CUDA kernels, FlashAttention-2), CUDA graph capture for decode, and energy telemetry before it can be answered.
+
 
 ## Analysis Documents
 
-- **[GPU Comparison: T4 vs A100](analysis/gpu_comparison_t4_vs_a100.md)** — Detailed analysis of performance differences across GPU generations, including scaling behavior, bottleneck analysis, and implications for custom accelerator design.
+- **[GPU Comparison: T4 vs A100](analysis/gpu_comparison_t4_vs_a100.md)**: performance differences across the two GPUs, scaling behavior, bottleneck analysis, and what the data does and does not license for the custom processor design.
 
 ## Data Integrity
 

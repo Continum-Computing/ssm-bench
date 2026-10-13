@@ -1,6 +1,6 @@
 # ssm-bench
 
-Benchmarks for state-space models, attention, and hybrid sequence models on NVIDIA GPUs. Measures latency, memory bandwidth, compute utilization, and energy per token. Everything is reproducible.
+Benchmarks for state-space models, attention, and hybrid sequence models on NVIDIA GPUs. Measures latency, memory bandwidth, compute utilization, and arithmetic intensity. Everything is reproducible.
 
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![Status](https://img.shields.io/badge/status-active-green)
@@ -14,15 +14,17 @@ Benchmarks for state-space models, attention, and hybrid sequence models on NVID
 
 State-space models (S4, Mamba, Mamba-2, Mamba-3) process sequences in O(N) with a fixed-size recurrent state. Attention is O(N²) and the KV cache grows with context length. On paper, SSMs should be faster and cheaper.
 
-In practice, GPUs are built for dense matrix multiplication. Attention is a bunch of large matmuls. SSMs are a stream of small state updates. The GPU runs both correctly, but it's the wrong shape of hardware for SSMs.
+In practice, GPUs are built for dense matrix multiplication. Attention is a bunch of large matmuls. SSMs are a stream of small state updates. The GPU runs both correctly, but we suspect it is the wrong shape of hardware for SSMs.
 
-This repo measures exactly how wrong. We benchmark SSM, attention, and hybrid blocks on real GPUs, keep every result reproducible, and publish the raw data.
+That suspicion is the hypothesis this repo exists to test: do GPUs turn the SSM's arithmetic savings into proportional speed and energy gains? We benchmark SSM, attention, and hybrid blocks on real GPUs, keep every result reproducible, and publish the raw data.
 
-## Results
+Where we are now: the published results come from our own reference implementations, not from tuned kernels. They are a starting point, not the answer.
+
+## Results so far
 
 We ran benchmarks on two GPUs: Tesla T4 (via Google Colab) and A100-SXM4-40GB (via Modal). 36 configurations per GPU (4 sequence lengths × 3 state dimensions × 3 model types).
 
-Here's what we found:
+**What was measured.** Our own reference implementations. The SSM path is a Python for-loop over time steps, which means one small kernel launch per step. The attention path is a plain matmul-softmax-matmul. Batch size 1, bf16. No fused kernels, no CUDA graphs.
 
 | | Tesla T4 | A100 |
 |---|---|---|
@@ -32,11 +34,11 @@ Here's what we found:
 | SSM arithmetic intensity | 3-6 FLOP/byte | 3-6 FLOP/byte |
 | Attention arithmetic intensity | 146-229 FLOP/byte | 146-229 FLOP/byte |
 
-The important number is the last row. SSMs are severely memory-bound. Attention is compute-bound. The GPU's compute units barely wake up for SSM workloads.
+**What these numbers say.** At batch size 1 with a Python loop in the critical path, kernel launch overhead dominates the SSM measurement. Both sides sit far below the hardware limits, which is why the utilization columns are near zero for both. The arithmetic intensity rows carry more weight, since intensity is a property of the algorithm rather than of our implementation.
 
-The other important finding: the gap gets *worse* on better hardware. A100 has 2.3x more bandwidth than T4. Attention takes advantage of it (bandwidth utilization goes from 1.15% to 9.30%). SSM doesn't benefit at all (bandwidth utilization actually drops from 0.15% to 0.08%). SSM latency is identical on both GPUs (319ms average). That tells you the problem isn't the GPU being slow. It's the GPU being the wrong tool.
+**What these numbers do not say.** They do not measure an architectural mismatch. This is naive SSM against naive attention, so most of the gap is our code, not the GPU. A fused Mamba kernel and FlashAttention-2 would both land somewhere completely different, and neither is in this table yet. The same caveat covers the "gap widens on better hardware" observation: a workload bound by launch overhead is not expected to benefit from extra bandwidth on any GPU.
 
-**Go/no-go decision:** GO. The gap is large enough to justify custom silicon. Proceeding with Continuum SSU-1 (Kalman architecture), a custom processor designed specifically for SSM workloads.
+**Go/no-go decision: pending.** We are not going to justify custom silicon on a comparison of naive implementations. The decision waits on strong baselines: FlashAttention-2 for attention, official Mamba CUDA kernels for the SSM path, and CUDA graph capture to take launch overhead out of the decode measurement. Architecture work in the private `kalman` repo continues in parallel, but nothing downstream should treat this table as the evidence that settled it.
 
 ### Raw data
 
@@ -46,19 +48,19 @@ The other important finding: the gap gets *worse* on better hardware. A100 has 2
 
 ### Visualizations
 
-**Latency scaling** - SSM latency vs attention across sequence lengths:
+**Latency scaling** - naive SSM vs naive attention across sequence lengths:
 
 ![Latency vs sequence length](profiling/results/t4-colab-2026-10-10/plots/latency_vs_seq_len.png)
 
-**Bandwidth utilization** - SSM uses almost none of the GPU's memory bandwidth:
+**Bandwidth utilization** - neither implementation comes close to the T4's 320 GB/s peak:
 
 ![Bandwidth utilization](profiling/results/t4-colab-2026-10-10/plots/bandwidth_utilization.png)
 
-**Compute utilization** - The GPU's compute units barely wake up for SSM workloads:
+**Compute utilization** - at batch size 1 the GPU spends most of its time waiting between kernel launches:
 
 ![Compute utilization](profiling/results/t4-colab-2026-10-10/plots/compute_utilization.png)
 
-**Roofline analysis** - SSM is severely memory-bound, attention is compute-bound:
+**Roofline analysis** - where each kernel sits against the bandwidth and compute limits:
 
 ![Roofline model](profiling/results/t4-colab-2026-10-10/plots/roofline_model.png)
 
@@ -73,19 +75,21 @@ The other important finding: the gap gets *worse* on better hardware. A100 has 2
 | Compute | TFLOP/s | Achieved vs theoretical peak |
 | Arithmetic intensity | FLOP/byte | Tells you if you're memory-bound or compute-bound |
 | Peak memory | GB | Weights, activations, state, KV cache |
-| Energy per token | J | Via pynvml power telemetry |
+| Energy per token | J | Planned, via pynvml power telemetry |
+
+The results published so far cover latency, bandwidth, compute utilization, and arithmetic intensity. Energy per token is specified but not implemented, which is why no energy number appears anywhere in this repo. Until it does, any throughput-per-watt statement is a target, not a measurement.
 
 ## Benchmark matrix
 
-Defined in config files under `configs/`, not hard-coded.
+Passed as command-line arguments to `profiling/run_benchmarks.py`, with the defaults shown below. `configs/` is reserved for config files but is empty today, so nothing is loaded from it yet.
 
 | Axis | Values |
 |---|---|
-| Model family | Selective-scan SSM (Mamba, Mamba-2, Mamba-3), attention (FlashAttention-2), hybrid (Jamba-style), delta-rule linear attention |
-| Phase | Prefill, decode |
-| Batch size | 1, scaling up for concurrent users |
+| Model family | Implemented: selective-scan SSM (recurrent and scan) and multi-head attention, both as reference implementations. Planned: Mamba-2, Mamba-3, FlashAttention-2, hybrid (Jamba-style), delta-rule linear attention |
+| Phase | Implemented: one full forward pass. Planned: decode-step timing |
+| Batch size | 1 only. Larger batches are planned, since serving workloads do not run at batch 1 |
 | Sequence length | 512-4096 (done), up to 32k (planned) |
-| Precision | bf16 (done), fp8 (planned) |
+| Precision | bf16 (used in the published results). The runner accepts fp32 and fp16. fp8 is planned |
 
 ## How we do it
 
@@ -93,10 +97,13 @@ Defined in config files under `configs/`, not hard-coded.
 2. **Warm up, then measure.** We throw away warmup iterations. Results are median and P95, never a single lucky run.
 3. **Control the machine.** Fixed seeds. GPU clocks locked when possible. Nothing else on the device.
 4. **Timing and profiling are separate.** Profilers change performance, so we keep them apart.
-5. **Strong baselines.** We compare against the best tuned kernels available:
-   - Attention: FlashAttention-2
-   - SSM: Official Mamba CUDA kernels
-   - Hybrid: optimized kernel per layer type
+5. **Strong baselines.** The comparison has to be against the best tuned kernels available, not deliberately weak code. This is the part that is not finished:
+   - Attention: FlashAttention-2 (not integrated yet)
+   - SSM: official Mamba CUDA kernels (not integrated yet)
+   - Hybrid: optimized kernel per layer type (not started)
+   - Decode: CUDA graph capture, to take launch overhead out of the measurement (not started)
+
+   Until those land, the published numbers describe our reference implementations and nothing else.
 6. **Roofline analysis.** Every kernel gets placed on a roofline plot so you can see whether it's bandwidth-limited or compute-limited.
 
 ## Reproducibility
@@ -145,7 +152,7 @@ ssm-bench/
 Linux, Python 3.11+, NVIDIA GPU for benchmarks. CPU-only works for correctness tests.
 
 ```bash
-git clone https://github.com/Continuum-Computiing/ssm-bench.git
+git clone https://github.com/Continum-Computing/ssm-bench.git
 cd ssm-bench
 make setup
 make test
@@ -197,7 +204,7 @@ Commit messages: `type: summary` (feat, fix, docs, test, chore). No secrets.
   author  = {Lincoln Angufibo},
   title   = {ssm-bench: reproducible benchmarks for state-space, attention and hybrid sequence models},
   year    = {2026},
-  url     = {https://github.com/Continuum-Computiing/ssm-bench}
+  url     = {https://github.com/Continum-Computing/ssm-bench}
 }
 ```
 
@@ -207,4 +214,4 @@ Apache 2.0. See [LICENSE](LICENSE).
 
 ## Continuum SSU-1
 
-This repo measures the GPU gap. The [kalman](https://github.com/Continuum-Computiing/kalman) repo (private) designs the custom processor that closes it. ssm-bench produces the data, kalman consumes it.
+This repo measures the GPU gap. The [kalman](https://github.com/Continum-Computing/kalman) repo (private) designs the custom processor meant to close it. ssm-bench produces the data, kalman consumes it.

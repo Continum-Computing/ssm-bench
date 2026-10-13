@@ -4,13 +4,15 @@ Tools for measuring and analyzing GPU performance of state-space models (SSMs) v
 
 ## Overview
 
-The profiling infrastructure quantifies the GPU–SSM mismatch by measuring:
+The profiling infrastructure measures where each workload sits relative to hardware limits:
 
-1. **Latency** — Time per forward pass (ms)
-2. **Memory bandwidth** — Bytes transferred per second (GB/s) and utilization vs. theoretical peak
-3. **Compute performance** — FLOPS achieved and utilization vs. theoretical peak
-4. **Arithmetic intensity** — FLOPS per byte transferred (identifies memory-bound vs. compute-bound workloads)
-5. **Roofline analysis** — Visualizes where each workload sits relative to hardware limits
+1. **Latency** - time per forward pass (ms)
+2. **Memory bandwidth** - bytes transferred per second (GB/s) and utilization vs. theoretical peak
+3. **Compute performance** - FLOPS achieved and utilization vs. theoretical peak
+4. **Arithmetic intensity** - FLOPS per byte transferred (identifies memory-bound vs. compute-bound workloads)
+5. **Roofline analysis** - visualizes where each workload sits relative to hardware limits
+
+What is being profiled is this repo's own reference code: a Python for-loop SSM and a plain matmul attention, both at batch size 1. Read every number with that in mind. Energy per token is not measured yet (there is no power telemetry code), and no fused kernels (Mamba CUDA, FlashAttention-2) are integrated.
 
 ## Quick Start
 
@@ -38,11 +40,11 @@ python profiling/visualize.py profiling/results/benchmark_results.json
 ```
 
 Generates:
-- `latency_vs_seq_len.png` — Latency scaling with sequence length
-- `bandwidth_utilization.png` — Memory bandwidth utilization
-- `compute_utilization.png` — Compute utilization
-- `roofline_model.png` — Roofline analysis
-- `benchmark_summary.txt` — Text summary report
+- `latency_vs_seq_len.png` - latency scaling with sequence length
+- `bandwidth_utilization.png` - memory bandwidth utilization
+- `compute_utilization.png` - compute utilization
+- `roofline_model.png` - roofline analysis
+- `benchmark_summary.txt` - text summary report
 
 ## Implementations
 
@@ -50,8 +52,8 @@ Generates:
 
 Two implementations:
 
-- **Recurrent** — Sequential processing, O(N) time, O(1) memory
-- **Scan** — Parallel scan algorithm, O(N) time, O(N) memory (parallelizable)
+- **Recurrent** - sequential processing, O(N) time, O(1) memory
+- **Scan** - parallel scan algorithm, O(N) time, O(N) memory (parallelizable)
 
 Both use the selective SSM formulation:
 ```
