@@ -24,7 +24,7 @@ from profiling.gpu_specs_db import lookup_peak_specs
 class GPUSpecs:
     """GPU hardware specifications."""
     name: str
-    compute_capability: Tuple[int, int]
+    compute_capability: tuple[int, int]
     total_memory_gb: float
     memory_bandwidth_gb_s: float  # Theoretical peak
     fp32_tflops: float  # Theoretical peak
@@ -32,7 +32,7 @@ class GPUSpecs:
     bf16_tflops: float  # Theoretical peak
     specs_source: str = "datasheet"  # "datasheet" or "estimated"
 
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return {
             "name": self.name,
             "compute_capability": f"{self.compute_capability[0]}.{self.compute_capability[1]}",
@@ -45,7 +45,7 @@ class GPUSpecs:
         }
 
 
-def get_gpu_specs(device_id: int = 0) -> Optional[GPUSpecs]:
+def get_gpu_specs(device_id: int = 0) -> GPUSpecs | None:
     """
     Query GPU specifications.
     
@@ -128,7 +128,7 @@ def benchmark_function(
     warmup_runs: int = 10,
     benchmark_runs: int = 100,
     **kwargs
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """
     Benchmark a function with warmup and statistical analysis.
     

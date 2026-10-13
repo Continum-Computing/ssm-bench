@@ -60,7 +60,7 @@ GPU_PEAK_SPECS = [
 ]
 
 
-def lookup_peak_specs(device_name: str) -> Optional[PeakSpecs]:
+def lookup_peak_specs(device_name: str) -> PeakSpecs | None:
     """
     Find datasheet peaks for a CUDA device name.
 
@@ -96,7 +96,7 @@ def peak_for_dtype(specs: PeakSpecs, dtype: str) -> float:
     return specs.bf16_tflops
 
 
-def specs_to_dict(specs: PeakSpecs) -> Dict:
+def specs_to_dict(specs: PeakSpecs) -> dict:
     """Serialize peaks for embedding in result metadata."""
     return {
         "memory_bandwidth_gb_s": specs.memory_bandwidth_gb_s,

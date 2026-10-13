@@ -49,7 +49,7 @@ class BenchmarkConfig:
     output_dim: int
     dtype: str  # "fp32", "fp16", "bf16"
     
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return asdict(self)
 
 
@@ -58,7 +58,7 @@ class BenchmarkResult:
     """Results from a single benchmark run."""
     config: BenchmarkConfig
     model_type: str  # "ssm_recurrent", "ssm_scan", "attention"
-    latency_stats: Dict[str, float]  # mean, std, min, max, median, p95, p99
+    latency_stats: dict[str, float]  # mean, std, min, max, median, p95, p99
     flops: int
     bytes_transferred: int
     arithmetic_intensity: float  # FLOPS/byte
@@ -67,7 +67,7 @@ class BenchmarkResult:
     bandwidth_utilization_pct: float
     compute_utilization_pct: float
     
-    def to_dict(self) -> Dict:
+    def to_dict(self) -> dict:
         return {
             "config": self.config.to_dict(),
             "model_type": self.model_type,
@@ -82,7 +82,7 @@ class BenchmarkResult:
         }
 
 
-def create_ssm_inputs(config: BenchmarkConfig, device: torch.device) -> Dict[str, torch.Tensor]:
+def create_ssm_inputs(config: BenchmarkConfig, device: torch.device) -> dict[str, torch.Tensor]:
     """Create input tensors for SSM benchmark."""
     dtype_map = {
         "fp32": torch.float32,
@@ -111,7 +111,7 @@ def create_ssm_inputs(config: BenchmarkConfig, device: torch.device) -> Dict[str
     }
 
 
-def create_attention_inputs(config: BenchmarkConfig, device: torch.device) -> Dict[str, torch.Tensor]:
+def create_attention_inputs(config: BenchmarkConfig, device: torch.device) -> dict[str, torch.Tensor]:
     """Create input tensors for attention benchmark."""
     dtype_map = {
         "fp32": torch.float32,
@@ -332,13 +332,13 @@ def benchmark_attention(config: BenchmarkConfig, device: torch.device) -> Benchm
 
 
 def run_benchmark_sweep(
-    seq_lens: List[int] = [512, 1024, 2048, 4096],
-    state_dims: List[int] = [64, 128, 256],
+    seq_lens: list[int] = [512, 1024, 2048, 4096],
+    state_dims: list[int] = [64, 128, 256],
     input_dim: int = 256,
     output_dim: int = 256,
     dtype: str = "bf16",
     device_id: int = 0,
-) -> List[BenchmarkResult]:
+) -> list[BenchmarkResult]:
     """
     Run a sweep of benchmarks across different configurations.
     
@@ -412,7 +412,7 @@ def run_benchmark_sweep(
     return results
 
 
-def save_benchmark_results(results: List[BenchmarkResult], output_path: str):
+def save_benchmark_results(results: list[BenchmarkResult], output_path: str):
     """
     Save benchmark results to JSON file.
     
@@ -445,7 +445,7 @@ def save_benchmark_results(results: List[BenchmarkResult], output_path: str):
     print(f"Results saved to {output_path}")
 
 
-def load_benchmark_results(input_path: str) -> Dict:
+def load_benchmark_results(input_path: str) -> dict:
     """
     Load benchmark results from JSON file.
     

@@ -17,7 +17,7 @@ def discretize_zoh(
     A: torch.Tensor,
     B: torch.Tensor,
     delta: torch.Tensor
-) -> Tuple[torch.Tensor, torch.Tensor]:
+) -> tuple[torch.Tensor, torch.Tensor]:
     """
     Discretize continuous-time SSM parameters using Zero-Order Hold (ZOH).
 
@@ -50,7 +50,7 @@ def selective_ssm_recurrent(
     D: torch.Tensor,
     delta: torch.Tensor,
     x0: torch.Tensor = None
-) -> Tuple[torch.Tensor, torch.Tensor]:
+) -> tuple[torch.Tensor, torch.Tensor]:
     """
     Selective SSM computed recurrently (sequential, step-by-step).
 
@@ -100,7 +100,7 @@ def selective_ssm_scan(
     D: torch.Tensor,
     delta: torch.Tensor,
     x0: torch.Tensor = None
-) -> Tuple[torch.Tensor, torch.Tensor]:
+) -> tuple[torch.Tensor, torch.Tensor]:
     """
     Selective SSM computed via associative scan (parallel during training).
 

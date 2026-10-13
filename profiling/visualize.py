@@ -12,13 +12,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def load_results(filepath: str) -> Dict:
+def load_results(filepath: str) -> dict:
     """Load benchmark results from JSON file."""
     with open(filepath, 'r') as f:
         return json.load(f)
 
 
-def plot_latency_vs_sequence_length(results: Dict, output_path: str = "latency_vs_seq_len.png"):
+def plot_latency_vs_sequence_length(results: dict, output_path: str = "latency_vs_seq_len.png"):
     """
     Plot latency vs sequence length for all model types.
     
@@ -74,7 +74,7 @@ def plot_latency_vs_sequence_length(results: Dict, output_path: str = "latency_v
     print(f"Saved latency plot to {output_path}")
 
 
-def plot_bandwidth_utilization(results: Dict, output_path: str = "bandwidth_utilization.png"):
+def plot_bandwidth_utilization(results: dict, output_path: str = "bandwidth_utilization.png"):
     """
     Plot bandwidth utilization vs sequence length.
     
@@ -135,7 +135,7 @@ def plot_bandwidth_utilization(results: Dict, output_path: str = "bandwidth_util
     print(f"Saved bandwidth utilization plot to {output_path}")
 
 
-def plot_compute_utilization(results: Dict, output_path: str = "compute_utilization.png"):
+def plot_compute_utilization(results: dict, output_path: str = "compute_utilization.png"):
     """
     Plot compute utilization vs sequence length.
     
@@ -196,7 +196,7 @@ def plot_compute_utilization(results: Dict, output_path: str = "compute_utilizat
     print(f"Saved compute utilization plot to {output_path}")
 
 
-def plot_roofline_model(results: Dict, output_path: str = "roofline_model.png"):
+def plot_roofline_model(results: dict, output_path: str = "roofline_model.png"):
     """
     Plot roofline model showing arithmetic intensity vs achieved performance.
     
@@ -274,7 +274,7 @@ def plot_roofline_model(results: Dict, output_path: str = "roofline_model.png"):
     print(f"Saved roofline model to {output_path}")
 
 
-def generate_summary_report(results: Dict, output_path: str = "benchmark_summary.txt"):
+def generate_summary_report(results: dict, output_path: str = "benchmark_summary.txt"):
     """
     Generate a text summary report of benchmark results.
     

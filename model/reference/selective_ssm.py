@@ -32,7 +32,7 @@ def discretize_zoh(
     A: np.ndarray,
     B: np.ndarray,
     delta: np.ndarray
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Discretize continuous-time SSM parameters using Zero-Order Hold (ZOH).
 
@@ -75,7 +75,7 @@ def selective_ssm_recurrent(
     D: np.ndarray,
     delta: np.ndarray,
     x0: np.ndarray = None
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Selective SSM computed recurrently (sequential, step-by-step).
 
@@ -138,7 +138,7 @@ def selective_ssm_scan(
     D: np.ndarray,
     delta: np.ndarray,
     x0: np.ndarray = None
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Selective SSM computed via associative scan (parallel during training).
 

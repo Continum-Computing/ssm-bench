@@ -51,13 +51,13 @@ RESULTS_DIR = Path(__file__).resolve().parent / "results"
 CORRECTION_DATE = "2026-10-13"
 
 
-def _mean(values: List[float]) -> float:
+def _mean(values: list[float]) -> float:
     if not values:
         raise ValueError("cannot average an empty group")
     return sum(values) / len(values)
 
 
-def _grouping_for(results: List[Dict], field: str, stored: float) -> Optional[str]:
+def _grouping_for(results: list[dict], field: str, stored: float) -> str | None:
     """
     Work out which models a stored summary average was computed over.
 
@@ -80,7 +80,7 @@ def _grouping_for(results: List[Dict], field: str, stored: float) -> Optional[st
     return None
 
 
-def correct_result_set(run_dir: Path, dry_run: bool = False) -> Dict:
+def correct_result_set(run_dir: Path, dry_run: bool = False) -> dict:
     """Recompute derived metrics for one result directory."""
     raw_path = run_dir / "benchmark_results.json"
     meta_path = run_dir / "metadata.json"
@@ -187,8 +187,8 @@ def correct_result_set(run_dir: Path, dry_run: bool = False) -> Dict:
     return report
 
 
-def _correct_metadata_file(meta_path: Path, raw: Dict, specs, old_peaks: Dict,
-                           results: List[Dict], original: List[Dict]) -> None:
+def _correct_metadata_file(meta_path: Path, raw: dict, specs, old_peaks: dict,
+                           results: list[dict], original: list[dict]) -> None:
     """
     Rebuild the metadata.json summary block from the raw per-config data.
 
