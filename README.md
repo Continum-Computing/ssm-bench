@@ -74,18 +74,18 @@ This decision is a gate, not a milestone. Everything downstream of it in the pri
 
 ## What we measure
 
-| Metric | Unit | Notes |
-|---|---|---|
-| Latency per token | ms | Median and P95 over 100 runs |
-| Prefill latency | ms | For a given prompt length |
-| Throughput | tokens/s | Fixed batch size and sequence length |
-| Memory bandwidth | GB/s | Achieved vs theoretical peak |
-| Compute | TFLOP/s | Achieved vs theoretical peak |
-| Arithmetic intensity | FLOP/byte | Tells you if you're memory-bound or compute-bound |
-| Peak memory | GB | Weights, activations, state, KV cache |
-| Energy per token | J | Planned, via pynvml power telemetry |
+| Metric | Unit | Status | Notes |
+|---|---|---|---|
+| Full forward-pass latency | ms | Measured | Median and P95 over 100 runs |
+| Prefill latency | ms | Planned | A separate prefill phase is not implemented |
+| Throughput | tokens/s | Planned | No tokens-per-second measurement is emitted |
+| Memory bandwidth | GB/s | Measured | Achieved vs theoretical peak |
+| Compute | TFLOP/s | Measured | Achieved vs theoretical peak |
+| Arithmetic intensity | FLOP/byte | Measured | Tells you if you're memory-bound or compute-bound |
+| Peak memory | GB | Planned | Weights, activations, state, and KV cache are not measured |
+| Energy per token | J | Planned | Requires pynvml power telemetry |
 
-The results published so far cover latency, bandwidth, compute utilization, and arithmetic intensity. Energy per token is specified but not implemented, which is why no energy number appears anywhere in this repo. Until it does, any throughput-per-watt statement is a target, not a measurement.
+The published results cover one full forward pass, bandwidth, compute utilization, and arithmetic intensity. The runner does not yet split prefill from decode or emit throughput, peak-memory, or energy-per-token measurements. Until those metrics are implemented, any related value is a planned capability rather than a result from this repository.
 
 ## Benchmark matrix
 
