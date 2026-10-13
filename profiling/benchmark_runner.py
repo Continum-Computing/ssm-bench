@@ -332,8 +332,8 @@ def benchmark_attention(config: BenchmarkConfig, device: torch.device) -> Benchm
 
 
 def run_benchmark_sweep(
-    seq_lens: list[int] = [512, 1024, 2048, 4096],
-    state_dims: list[int] = [64, 128, 256],
+    seq_lens: list[int] | None = None,
+    state_dims: list[int] | None = None,
     input_dim: int = 256,
     output_dim: int = 256,
     dtype: str = "bf16",
@@ -341,18 +341,23 @@ def run_benchmark_sweep(
 ) -> list[BenchmarkResult]:
     """
     Run a sweep of benchmarks across different configurations.
-    
+
     Args:
-        seq_lens: List of sequence lengths to test
-        state_dims: List of state dimensions to test (for SSM)
+        seq_lens: Sequence lengths to test. Defaults to [512, 1024, 2048, 4096].
+        state_dims: State dimensions to test (for SSM). Defaults to [64, 128, 256].
         input_dim: Input dimension (fixed)
         output_dim: Output dimension (fixed)
         dtype: Data type ("fp32", "fp16", "bf16")
         device_id: CUDA device ID
-    
+
     Returns:
         List of BenchmarkResult objects
     """
+    if seq_lens is None:
+        seq_lens = [512, 1024, 2048, 4096]
+    if state_dims is None:
+        state_dims = [64, 128, 256]
+
     if not torch.cuda.is_available():
         raise RuntimeError("CUDA not available - GPU required for benchmarking")
     
