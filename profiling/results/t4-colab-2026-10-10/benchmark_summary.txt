@@ -6,9 +6,9 @@ GPU Information:
   Name: Tesla T4
   Compute Capability: 7.5
   Total Memory: 15.6 GB
-  Peak Memory Bandwidth: 900 GB/s
-  Peak FP32 Performance: 13.0 TFLOPS
-  Peak BF16 Performance: 26.0 TFLOPS
+  Peak Memory Bandwidth: 320 GB/s
+  Peak FP32 Performance: 8.1 TFLOPS
+  Peak BF16 Performance: 8.1 TFLOPS
 
 Benchmark Metadata:
   Timestamp: 2026-10-10T10:45:06.066986
@@ -26,31 +26,38 @@ Average Latency (ms):
   Attention:     3.247 ms
 
 Average Bandwidth Utilization (%):
-  SSM Recurrent: 0.1%
-  SSM Scan:      0.1%
-  Attention:     0.9%
+  SSM Recurrent: 0.2%
+  SSM Scan:      0.2%
+  Attention:     2.5%
 
 Average Compute Utilization (%):
   SSM Recurrent: 0.0%
   SSM Scan:      0.0%
-  Attention:     6.1%
+  Attention:     19.5%
 
 ================================================================================
 Key Findings
 ================================================================================
 
-SSM Speedup vs Attention:
-  Recurrent: 0.01x faster
-  Scan:      0.01x faster
+Latency ratio (SSM relative to attention):
+  Recurrent: 119.6x slower
+  Scan:      153.3x slower
 
 GPU Utilization Gap:
-  SSM Recurrent bandwidth utilization: 0.1%
-  Attention bandwidth utilization:     0.9%
-  Gap: 0.8 percentage points
+  SSM Recurrent bandwidth utilization: 0.2%
+  Attention bandwidth utilization:     2.5%
+  Gap: 2.3 percentage points
 
 Interpretation:
-  ✓ SSM shows significantly lower bandwidth utilization than attention,
-    suggesting GPUs are not optimized for SSM workloads.
-    This supports the hypothesis for custom SSM accelerator design.
+  These figures describe the reference implementations in this
+  repo, not fused kernels. The SSM path is a Python for-loop over
+  time steps, so at batch size 1 its latency is dominated by kernel
+  launch overhead. Low utilization on both sides means neither
+  implementation saturates the device.
+
+  Nothing here supports or refutes an architectural mismatch. That
+  question needs strong baselines (FlashAttention-2, official Mamba
+  CUDA kernels, a fused Mamba block, CUDA graph capture) and energy
+  telemetry. See docs/whitepaper.md.
 
 ================================================================================

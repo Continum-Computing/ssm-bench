@@ -5,14 +5,33 @@
       "name": "NVIDIA A100-SXM4-40GB",
       "compute_capability": "8.0",
       "total_memory_gb": 42.429251584,
-      "memory_bandwidth_gb_s": 2039,
+      "memory_bandwidth_gb_s": 1555,
       "fp32_tflops": 19.5,
-      "fp16_tflops": 78.0,
-      "bf16_tflops": 78.0
+      "fp16_tflops": 312.0,
+      "bf16_tflops": 312.0,
+      "specs_source": "datasheet",
+      "specs_note": "Ampere SXM, 40GB HBM2e"
     },
     "python_version": "3.11.12",
     "torch_version": "2.14.1+cu130",
-    "cuda_version": "13.0"
+    "cuda_version": "13.0",
+    "peak_correction": {
+      "date": "2026-10-13",
+      "reason": "Peaks were originally looked up by compute capability. The Tesla T4 shares capability 7.5 with the RTX 2080 Ti and inherited its specs; the A100 40GB run used the 80GB bandwidth and a non-tensor BF16 rate. Measured values are unchanged; only derived utilization percentages and the peaks they are divided by were corrected.",
+      "previous_peaks": {
+        "memory_bandwidth_gb_s": 2039,
+        "fp32_tflops": 19.5,
+        "fp16_tflops": 78.0,
+        "bf16_tflops": 78.0
+      },
+      "corrected_peaks": {
+        "memory_bandwidth_gb_s": 1555,
+        "fp32_tflops": 19.5,
+        "fp16_tflops": 312.0,
+        "bf16_tflops": 312.0,
+        "note": "Ampere SXM, 40GB HBM2e"
+      }
+    }
   },
   "results": [
     {
@@ -40,8 +59,8 @@
       "arithmetic_intensity": 6.042677251093275,
       "achieved_bandwidth_gb_s": 0.2541442822794256,
       "achieved_tflops": 0.001535711873025313,
-      "bandwidth_utilization_pct": 0.012464162936705523,
-      "compute_utilization_pct": 0.001968861375673478
+      "bandwidth_utilization_pct": 0.01634368374787303,
+      "compute_utilization_pct": 0.0004922153439183695
     },
     {
       "config": {
@@ -68,8 +87,8 @@
       "arithmetic_intensity": 6.042677251093275,
       "achieved_bandwidth_gb_s": 0.2068402279048793,
       "achieved_tflops": 0.0012498687397717626,
-      "bandwidth_utilization_pct": 0.010144199504898444,
-      "compute_utilization_pct": 0.0016023958202202085
+      "bandwidth_utilization_pct": 0.013301622373304137,
+      "compute_utilization_pct": 0.00040059895505505214
     },
     {
       "config": {
@@ -96,8 +115,8 @@
       "arithmetic_intensity": 146.5,
       "achieved_bandwidth_gb_s": 25.44189698874056,
       "achieved_tflops": 3.727237908850492,
-      "bandwidth_utilization_pct": 1.2477634619294047,
-      "compute_utilization_pct": 4.778510139551913
+      "bandwidth_utilization_pct": 1.6361348545813863,
+      "compute_utilization_pct": 1.1946275348879782
     },
     {
       "config": {
@@ -124,8 +143,8 @@
       "arithmetic_intensity": 4.073818060659708,
       "achieved_bandwidth_gb_s": 0.6390521273156394,
       "achieved_tflops": 0.002603382097961459,
-      "bandwidth_utilization_pct": 0.03134144812729963,
-      "compute_utilization_pct": 0.0033376693563608446
+      "bandwidth_utilization_pct": 0.041096599827372314,
+      "compute_utilization_pct": 0.0008344173390902112
     },
     {
       "config": {
@@ -152,8 +171,8 @@
       "arithmetic_intensity": 4.073818060659708,
       "achieved_bandwidth_gb_s": 0.4579611469583874,
       "achieved_tflops": 0.0018656503915595133,
-      "bandwidth_utilization_pct": 0.022460085677213703,
-      "compute_utilization_pct": 0.0023918594763583504
+      "bandwidth_utilization_pct": 0.029450877617902726,
+      "compute_utilization_pct": 0.0005979648690895876
     },
     {
       "config": {
@@ -180,8 +199,8 @@
       "arithmetic_intensity": 146.5,
       "achieved_bandwidth_gb_s": 25.512528716603935,
       "achieved_tflops": 3.7375854569824765,
-      "bandwidth_utilization_pct": 1.2512274995882264,
-      "compute_utilization_pct": 4.791776226900611
+      "bandwidth_utilization_pct": 1.6406770878844974,
+      "compute_utilization_pct": 1.1979440567251527
     },
     {
       "config": {
@@ -208,8 +227,8 @@
       "arithmetic_intensity": 2.962380355064357,
       "achieved_bandwidth_gb_s": 1.5775555281418006,
       "achieved_tflops": 0.004673319505590447,
-      "bandwidth_utilization_pct": 0.07736907935957826,
-      "compute_utilization_pct": 0.0059914352635774965
+      "bandwidth_utilization_pct": 0.10145051627921547,
+      "compute_utilization_pct": 0.0014978588158943741
     },
     {
       "config": {
@@ -236,8 +255,8 @@
       "arithmetic_intensity": 2.962380355064357,
       "achieved_bandwidth_gb_s": 0.9194996770199835,
       "achieved_tflops": 0.0027239077796920204,
-      "bandwidth_utilization_pct": 0.04509561927513406,
-      "compute_utilization_pct": 0.003492189461143616
+      "bandwidth_utilization_pct": 0.05913181202700858,
+      "compute_utilization_pct": 0.000873047365285904
     },
     {
       "config": {
@@ -264,8 +283,8 @@
       "arithmetic_intensity": 146.5,
       "achieved_bandwidth_gb_s": 20.704794764805705,
       "achieved_tflops": 3.033252433044036,
-      "bandwidth_utilization_pct": 1.0154386839041543,
-      "compute_utilization_pct": 3.888785170569277
+      "bandwidth_utilization_pct": 1.3314980556145148,
+      "compute_utilization_pct": 0.9721962926423192
     },
     {
       "config": {
@@ -292,8 +311,8 @@
       "arithmetic_intensity": 6.075702593171403,
       "achieved_bandwidth_gb_s": 0.22761233567355635,
       "achieved_tflops": 0.0013829048580896264,
-      "bandwidth_utilization_pct": 0.011162939464127334,
-      "compute_utilization_pct": 0.0017729549462687517
+      "bandwidth_utilization_pct": 0.014637449239457,
+      "compute_utilization_pct": 0.0004432387365671879
     },
     {
       "config": {
@@ -320,8 +339,8 @@
       "arithmetic_intensity": 6.075702593171403,
       "achieved_bandwidth_gb_s": 0.19273793698882014,
       "achieved_tflops": 0.001171018383565481,
-      "bandwidth_utilization_pct": 0.009452571701266312,
-      "compute_utilization_pct": 0.0015013056199557448
+      "bandwidth_utilization_pct": 0.012394722635936987,
+      "compute_utilization_pct": 0.0003753264049889362
     },
     {
       "config": {
@@ -348,8 +367,8 @@
       "arithmetic_intensity": 181.05882352941177,
       "achieved_bandwidth_gb_s": 60.74818535115102,
       "achieved_tflops": 10.998994971226049,
-      "bandwidth_utilization_pct": 2.97931267048313,
-      "compute_utilization_pct": 14.10127560413596
+      "bandwidth_utilization_pct": 3.9066357139003873,
+      "compute_utilization_pct": 3.52531890103399
     },
     {
       "config": {
@@ -376,8 +395,8 @@
       "arithmetic_intensity": 4.088140549793023,
       "achieved_bandwidth_gb_s": 0.587419260600844,
       "achieved_tflops": 0.0024014524989917456,
-      "bandwidth_utilization_pct": 0.02880918394315076,
-      "compute_utilization_pct": 0.0030787852551176225
+      "bandwidth_utilization_pct": 0.037776158237996404,
+      "compute_utilization_pct": 0.0007696963137794056
     },
     {
       "config": {
@@ -404,8 +423,8 @@
       "arithmetic_intensity": 4.088140549793023,
       "achieved_bandwidth_gb_s": 0.4519562644528518,
       "achieved_tflops": 0.0018476607314426828,
-      "bandwidth_utilization_pct": 0.022165584328241873,
-      "compute_utilization_pct": 0.002368795809541901
+      "bandwidth_utilization_pct": 0.02906471154037632,
+      "compute_utilization_pct": 0.0005921989523854752
     },
     {
       "config": {
@@ -432,8 +451,8 @@
       "arithmetic_intensity": 181.05882352941177,
       "achieved_bandwidth_gb_s": 60.218624525926764,
       "achieved_tflops": 10.90311331122368,
-      "bandwidth_utilization_pct": 2.9533410753274527,
-      "compute_utilization_pct": 13.978350399004718
+      "bandwidth_utilization_pct": 3.872580355365065,
+      "compute_utilization_pct": 3.4945875997511795
     },
     {
       "config": {
@@ -460,8 +479,8 @@
       "arithmetic_intensity": 2.9695449010223443,
       "achieved_bandwidth_gb_s": 1.5749353621379578,
       "achieved_tflops": 0.0046768412740765515,
-      "bandwidth_utilization_pct": 0.0772405768581637,
-      "compute_utilization_pct": 0.005995950351380194
+      "bandwidth_utilization_pct": 0.10128201685774649,
+      "compute_utilization_pct": 0.0014989875878450485
     },
     {
       "config": {
@@ -488,8 +507,8 @@
       "arithmetic_intensity": 2.9695449010223443,
       "achieved_bandwidth_gb_s": 1.2011926846665368,
       "achieved_tflops": 0.0035669956118968547,
-      "bandwidth_utilization_pct": 0.0589108722249405,
-      "compute_utilization_pct": 0.00457307129730366
+      "bandwidth_utilization_pct": 0.07724711798498629,
+      "compute_utilization_pct": 0.001143267824325915
     },
     {
       "config": {
@@ -516,8 +535,8 @@
       "arithmetic_intensity": 181.05882352941177,
       "achieved_bandwidth_gb_s": 61.2569500678278,
       "achieved_tflops": 11.091111312280823,
-      "bandwidth_utilization_pct": 3.0042643485938108,
-      "compute_utilization_pct": 14.219373477283106
+      "bandwidth_utilization_pct": 3.9393537021111125,
+      "compute_utilization_pct": 3.5548433693207766
     },
     {
       "config": {
@@ -544,8 +563,8 @@
       "arithmetic_intensity": 6.0923510064232245,
       "achieved_bandwidth_gb_s": 0.24131649270850908,
       "achieved_tflops": 0.001470184777219208,
-      "bandwidth_utilization_pct": 0.0118350413295002,
-      "compute_utilization_pct": 0.001884852278486164
+      "bandwidth_utilization_pct": 0.015518745511801227,
+      "compute_utilization_pct": 0.000471213069621541
     },
     {
       "config": {
@@ -572,8 +591,8 @@
       "arithmetic_intensity": 6.0923510064232245,
       "achieved_bandwidth_gb_s": 0.1900669250165436,
       "achieved_tflops": 0.001157954421912307,
-      "bandwidth_utilization_pct": 0.009321575528030583,
-      "compute_utilization_pct": 0.0014845569511696246
+      "bandwidth_utilization_pct": 0.012222953377269684,
+      "compute_utilization_pct": 0.00037113923779240614
     },
     {
       "config": {
@@ -600,8 +619,8 @@
       "arithmetic_intensity": 209.46938775510205,
       "achieved_bandwidth_gb_s": 140.12511278671258,
       "achieved_tflops": 29.351921584547306,
-      "bandwidth_utilization_pct": 6.872246826224256,
-      "compute_utilization_pct": 37.63066869813757
+      "bandwidth_utilization_pct": 9.0112612724574,
+      "compute_utilization_pct": 9.407667174534392
     },
     {
       "config": {
@@ -628,8 +647,8 @@
       "arithmetic_intensity": 4.095339626485229,
       "achieved_bandwidth_gb_s": 0.5912249070409425,
       "achieved_tflops": 0.002421266789969818,
-      "bandwidth_utilization_pct": 0.028995826730796596,
-      "compute_utilization_pct": 0.003104188192268997
+      "bandwidth_utilization_pct": 0.038020894343468975,
+      "compute_utilization_pct": 0.0007760470480672493
     },
     {
       "config": {
@@ -656,8 +675,8 @@
       "arithmetic_intensity": 4.095339626485229,
       "achieved_bandwidth_gb_s": 0.4618410528755445,
       "achieved_tflops": 0.0018913959649788773,
-      "bandwidth_utilization_pct": 0.022650370420575994,
-      "compute_utilization_pct": 0.0024248666217677912
+      "bandwidth_utilization_pct": 0.029700389252446592,
+      "compute_utilization_pct": 0.0006062166554419478
     },
     {
       "config": {
@@ -684,8 +703,8 @@
       "arithmetic_intensity": 209.46938775510205,
       "achieved_bandwidth_gb_s": 137.19035490271946,
       "achieved_tflops": 28.737179647377804,
-      "bandwidth_utilization_pct": 6.72831559110934,
-      "compute_utilization_pct": 36.84253800945873
+      "bandwidth_utilization_pct": 8.82253086191122,
+      "compute_utilization_pct": 9.210634502364682
     },
     {
       "config": {
@@ -712,8 +731,8 @@
       "arithmetic_intensity": 2.973140185378938,
       "achieved_bandwidth_gb_s": 1.652378060248596,
       "achieved_tflops": 0.004912751612363601,
-      "bandwidth_utilization_pct": 0.0810386493501028,
-      "compute_utilization_pct": 0.006298399503030257
+      "bandwidth_utilization_pct": 0.10626225467836631,
+      "compute_utilization_pct": 0.0015745998757575642
     },
     {
       "config": {
@@ -740,8 +759,8 @@
       "arithmetic_intensity": 2.973140185378938,
       "achieved_bandwidth_gb_s": 1.3100266207368194,
       "achieved_tflops": 0.0038948927900288115,
-      "bandwidth_utilization_pct": 0.0642484855682599,
-      "compute_utilization_pct": 0.004993452294908733
+      "bandwidth_utilization_pct": 0.08424608493484369,
+      "compute_utilization_pct": 0.0012483630737271832
     },
     {
       "config": {
@@ -768,8 +787,8 @@
       "arithmetic_intensity": 209.46938775510205,
       "achieved_bandwidth_gb_s": 142.1496986146334,
       "achieved_tflops": 29.776010338379535,
-      "bandwidth_utilization_pct": 6.9715399026303775,
-      "compute_utilization_pct": 38.17437222869171
+      "bandwidth_utilization_pct": 9.141459717982855,
+      "compute_utilization_pct": 9.543593057172927
     },
     {
       "config": {
@@ -796,8 +815,8 @@
       "arithmetic_intensity": 6.100709474510117,
       "achieved_bandwidth_gb_s": 0.26427579806105844,
       "achieved_tflops": 0.0016122698651148217,
-      "bandwidth_utilization_pct": 0.012961049438992567,
-      "compute_utilization_pct": 0.0020670126475831048
+      "bandwidth_utilization_pct": 0.01699522817112916,
+      "compute_utilization_pct": 0.0005167531618957762
     },
     {
       "config": {
@@ -824,8 +843,8 @@
       "arithmetic_intensity": 6.100709474510117,
       "achieved_bandwidth_gb_s": 0.19946748534351785,
       "achieved_tflops": 0.0012168931776919071,
-      "bandwidth_utilization_pct": 0.009782613307676206,
-      "compute_utilization_pct": 0.001560119458579368
+      "bandwidth_utilization_pct": 0.012827491018875745,
+      "compute_utilization_pct": 0.000390029864644842
     },
     {
       "config": {
@@ -852,8 +871,8 @@
       "arithmetic_intensity": 229.56521739130434,
       "achieved_bandwidth_gb_s": 188.6747548655077,
       "achieved_tflops": 43.31316111695134,
-      "bandwidth_utilization_pct": 9.253298424007244,
-      "compute_utilization_pct": 55.52969373968121
+      "bandwidth_utilization_pct": 12.133424750193422,
+      "compute_utilization_pct": 13.882423434920302
     },
     {
       "config": {
@@ -880,8 +899,8 @@
       "arithmetic_intensity": 4.098948681207544,
       "achieved_bandwidth_gb_s": 0.6345120101621554,
       "achieved_tflops": 0.0026008321672645143,
-      "bandwidth_utilization_pct": 0.03111878421589776,
-      "compute_utilization_pct": 0.0033344002144416853
+      "bandwidth_utilization_pct": 0.0408046308785952,
+      "compute_utilization_pct": 0.0008336000536104213
     },
     {
       "config": {
@@ -908,8 +927,8 @@
       "arithmetic_intensity": 4.098948681207544,
       "achieved_bandwidth_gb_s": 0.47264242309707877,
       "achieved_tflops": 0.0019373370368365088,
-      "bandwidth_utilization_pct": 0.023180109028792487,
-      "compute_utilization_pct": 0.002483765431841678
+      "bandwidth_utilization_pct": 0.030395011131644938,
+      "compute_utilization_pct": 0.0006209413579604195
     },
     {
       "config": {
@@ -936,8 +955,8 @@
       "arithmetic_intensity": 229.56521739130434,
       "achieved_bandwidth_gb_s": 191.04920418905132,
       "achieved_tflops": 43.858252092095256,
-      "bandwidth_utilization_pct": 9.36975008283724,
-      "compute_utilization_pct": 56.22852832319904
+      "bandwidth_utilization_pct": 12.286122455887545,
+      "compute_utilization_pct": 14.05713208079976
     },
     {
       "config": {
@@ -964,8 +983,8 @@
       "arithmetic_intensity": 2.974941094193966,
       "achieved_bandwidth_gb_s": 1.5307676626284958,
       "achieved_tflops": 0.004553943625216758,
-      "bandwidth_utilization_pct": 0.07507443171302089,
-      "compute_utilization_pct": 0.005838389263098408
+      "bandwidth_utilization_pct": 0.0984416503298068,
+      "compute_utilization_pct": 0.001459597315774602
     },
     {
       "config": {
@@ -992,8 +1011,8 @@
       "arithmetic_intensity": 2.974941094193966,
       "achieved_bandwidth_gb_s": 1.253467922597091,
       "achieved_tflops": 0.003728993233188027,
-      "bandwidth_utilization_pct": 0.06147464063742477,
-      "compute_utilization_pct": 0.004780760555369265
+      "bandwidth_utilization_pct": 0.08060886962039171,
+      "compute_utilization_pct": 0.0011951901388423162
     },
     {
       "config": {
@@ -1020,8 +1039,8 @@
       "arithmetic_intensity": 229.56521739130434,
       "achieved_bandwidth_gb_s": 189.5772982199997,
       "achieved_tflops": 43.520353678330366,
-      "bandwidth_utilization_pct": 9.29756244335457,
-      "compute_utilization_pct": 55.79532522862868
+      "bandwidth_utilization_pct": 12.19146612347265,
+      "compute_utilization_pct": 13.94883130715717
     }
   ]
 }

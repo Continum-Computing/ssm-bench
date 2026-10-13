@@ -7,9 +7,12 @@
       "name": "NVIDIA A100-SXM4-40GB",
       "compute_capability": "8.0",
       "memory_gb": 42.43,
-      "peak_bandwidth_gb_s": 2039,
+      "peak_bandwidth_gb_s": 1555,
       "peak_fp32_tflops": 19.5,
-      "peak_bf16_tflops": 78.0
+      "peak_bf16_tflops": 312.0,
+      "peak_fp16_tflops": 312.0,
+      "specs_source": "datasheet",
+      "specs_note": "Ampere SXM, 40GB HBM2e"
     }
   },
   "software": {
@@ -18,8 +21,17 @@
     "cuda": "13.0"
   },
   "configuration": {
-    "sequence_lengths": [512, 1024, 2048, 4096],
-    "state_dimensions": [64, 128, 256],
+    "sequence_lengths": [
+      512,
+      1024,
+      2048,
+      4096
+    ],
+    "state_dimensions": [
+      64,
+      128,
+      256
+    ],
     "input_dim": 256,
     "output_dim": 256,
     "dtype": "bf16",
@@ -29,17 +41,76 @@
   },
   "summary": {
     "total_configurations": 36,
-    "models_tested": ["ssm_recurrent", "ssm_scan", "attention"],
-    "avg_ssm_recurrent_latency_ms": 319.4,
-    "avg_ssm_scan_latency_ms": 413.0,
-    "avg_attention_latency_ms": 0.23,
-    "avg_ssm_bandwidth_utilization_pct": 0.04,
-    "avg_attention_bandwidth_utilization_pct": 5.1,
-    "avg_ssm_compute_utilization_pct": 0.005,
-    "avg_attention_compute_utilization_pct": 28.0
+    "models_tested": [
+      "attention",
+      "ssm_recurrent",
+      "ssm_scan"
+    ],
+    "avg_ssm_recurrent_latency_ms": 319.369,
+    "avg_ssm_scan_latency_ms": 413.016,
+    "avg_attention_latency_ms": 0.233,
+    "avg_ssm_bandwidth_utilization_pct": 0.0524,
+    "avg_attention_bandwidth_utilization_pct": 6.6594,
+    "avg_ssm_compute_utilization_pct": 0.00093,
+    "avg_attention_compute_utilization_pct": 6.9991
   },
   "key_findings": "Naive reference SSM (Python for-loop) is 1000-1500x slower than naive matmul attention, with both sides under 0.1% of GPU resources. SSM latency is flat versus T4, which indicates a kernel-launch-bound floor in this implementation rather than an architectural mismatch. Corrected 2026-10-13: this run does not test the hypothesis and does not support a custom processor decision. Measured values in 'summary' are unchanged.",
   "files": {
     "raw_data": "benchmark_results.json"
+  },
+  "summary_repair": {
+    "date": "2026-10-13",
+    "grouping_convention": {
+      "avg_ssm_*": "ssm_recurrent only",
+      "avg_attention_*": "attention only"
+    },
+    "fields_that_contradicted_raw_data": {
+      "total_configurations": {
+        "stored": 36,
+        "recomputed": 36
+      },
+      "models_tested": {
+        "stored": [
+          "ssm_recurrent",
+          "ssm_scan",
+          "attention"
+        ],
+        "recomputed": [
+          "attention",
+          "ssm_recurrent",
+          "ssm_scan"
+        ]
+      },
+      "avg_ssm_bandwidth_utilization_pct": {
+        "stored": 0.04,
+        "recomputed": 0.0524
+      },
+      "avg_attention_bandwidth_utilization_pct": {
+        "stored": 5.1,
+        "recomputed": 6.6594
+      },
+      "avg_attention_compute_utilization_pct": {
+        "stored": 28.0,
+        "recomputed": 6.9991
+      }
+    },
+    "note": "Recomputed from benchmark_results.json. Fields listed above held values that did not match this run's own raw data."
+  },
+  "peak_correction": {
+    "date": "2026-10-13",
+    "reason": "Peaks were originally looked up by compute capability. The Tesla T4 shares capability 7.5 with the RTX 2080 Ti and inherited its specs; the A100 40GB run used the 80GB bandwidth and a non-tensor BF16 rate. Measured values are unchanged; only derived utilization percentages and the peaks they are divided by were corrected.",
+    "previous_peaks": {
+      "memory_bandwidth_gb_s": 2039,
+      "fp32_tflops": 19.5,
+      "fp16_tflops": 78.0,
+      "bf16_tflops": 78.0
+    },
+    "corrected_peaks": {
+      "memory_bandwidth_gb_s": 1555,
+      "fp32_tflops": 19.5,
+      "fp16_tflops": 312.0,
+      "bf16_tflops": 312.0,
+      "note": "Ampere SXM, 40GB HBM2e"
+    }
   }
 }
