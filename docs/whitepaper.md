@@ -118,16 +118,14 @@ These are real tradeoffs, not bugs. They shape what we're building:
 
 ## Where the build stands
 
-The benchmark side is honest about its limits now. The hardware side needs the same treatment.
-
 1. ✅ ssm-bench runs and publishes reference implementation benchmarks (done, Oct 10, 2026)
 2. 🔄 ssm-bench adds strong baselines (in progress)
-3. ⏳ GPU gap report with a real go/no-go decision (blocked on 2)
-4. 🔄 kalman architecture, compiler, and RTL (code written, not yet fully reviewed, tested, or error-free, so not claimed as complete)
-5. ⏳ kalman prototypes on FPGA
-6. ⏳ kalman validates the claim with measured throughput-per-watt
+3. ⏳ GPU gap report with a real go/no-go decision (blocked on 2). **This is the gate.**
+4. ⛔ kalman architecture, compiler, and RTL (blocked on 3)
+5. ⛔ kalman prototypes on FPGA (blocked on 3)
+6. ⛔ kalman validates the claim with measured throughput-per-watt (blocked on 3)
 
-Steps 4 through 6 do not depend on step 3 finishing, so the design work continues. But if step 3 comes back negative, the design work stops. That's the deal we made with ourselves.
+Steps 4 through 6 are gated on step 3, and the gate is enforced rather than aspirational. Kalman code for steps 4 and 5 was written on Oct 10, ahead of the gate. It's frozen: not extended, not reviewed, not tested, and not counted as progress. If step 3 comes back negative, it gets discarded. The only work proceeding right now is step 2, because step 2 is what clears the gate.
 
 ## Reproducing this
 

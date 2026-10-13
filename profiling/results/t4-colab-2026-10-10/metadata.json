@@ -38,7 +38,7 @@
     "avg_ssm_compute_utilization_pct": 0.01,
     "avg_attention_compute_utilization_pct": 5.1
   },
-  "key_findings": "SSM is 100-200x slower than attention on T4, using less than 0.2% of GPU memory bandwidth and compute resources. The performance gap confirms the GPU-SSM architectural mismatch hypothesis.",
+  "key_findings": "Naive reference SSM (Python for-loop) is 100-200x slower than naive matmul attention on T4, with both sides under 0.2% of memory bandwidth and compute. Corrected 2026-10-13: the gap measures kernel launch overhead, not architectural fit, and does not confirm the hypothesis. Measured values in 'summary' are unchanged.",
   "files": {
     "raw_data": "benchmark_results.json",
     "summary": "benchmark_summary.txt",

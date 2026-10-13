@@ -205,9 +205,11 @@ Whether the GPU-SSM mismatch is architectural is still an open question. It need
 ## Data Integrity
 
 All result files are:
-- **Immutable**: Once committed, results are never modified. If a bug is found, a new result set is created with a corrected run.
+- **Immutable**: Once committed, measured values are never modified. If a bug is found, a new result set is created with a corrected run.
 - **Reproducible**: Each result set includes full metadata (software versions, hardware specs, configuration) to enable reproduction.
 - **Self-contained**: Each result directory contains everything needed to understand and analyze the results.
+
+Immutability covers measurements, not interpretation. The `summary` blocks in each `metadata.json`, and every number in `benchmark_results.json`, are unchanged since 2026-10-10. The interpretive fields (`key_findings` in each `metadata.json`, and `conclusion` in `manifest.json`) were corrected on 2026-10-13, because they asserted a confirmed architectural mismatch that the naive reference implementations in these runs cannot support. Each corrected field says so in its own text and carries the correction date. Analysis documents are corrected the same way, with a dated note at the top.
 
 ## Contact
 

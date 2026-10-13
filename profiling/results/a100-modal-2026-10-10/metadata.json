@@ -38,7 +38,7 @@
     "avg_ssm_compute_utilization_pct": 0.005,
     "avg_attention_compute_utilization_pct": 28.0
   },
-  "key_findings": "SSM performance gap widens on A100 — 1000-1500x slower than attention, using less than 0.1% of GPU resources. The architectural mismatch is more severe on higher-end hardware, confirming the need for custom SSM accelerators.",
+  "key_findings": "Naive reference SSM (Python for-loop) is 1000-1500x slower than naive matmul attention, with both sides under 0.1% of GPU resources. SSM latency is flat versus T4, which indicates a kernel-launch-bound floor in this implementation rather than an architectural mismatch. Corrected 2026-10-13: this run does not test the hypothesis and does not support a custom processor decision. Measured values in 'summary' are unchanged.",
   "files": {
     "raw_data": "benchmark_results.json"
   }
