@@ -24,8 +24,8 @@ where:
 The subscript k on Ā and B̄ indicates they depend on the input (selective mechanism).
 """
 
+
 import numpy as np
-from typing import Tuple
 
 
 def discretize_zoh(

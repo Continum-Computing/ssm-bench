@@ -6,36 +6,36 @@ This module runs systematic benchmarks across different configurations
 metrics for both SSM and attention mechanisms.
 """
 
-import torch
-import numpy as np
-from typing import Dict, List, Optional
-from dataclasses import dataclass, asdict
 import json
-from datetime import datetime
+import os
 import platform
 
 # Import from model package
 import sys
-import os
+from dataclasses import asdict, dataclass
+from datetime import datetime
+
+import torch
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from model.pytorch_impl.selective_ssm import (
+    compute_delta,
     selective_ssm_recurrent,
     selective_ssm_scan,
-    compute_delta,
 )
 from profiling.gpu_profiler import (
-    get_gpu_specs,
     benchmark_function,
-    calculate_flops_ssm,
-    calculate_flops_attention,
-    calculate_memory_bytes_ssm,
-    calculate_memory_bytes_attention,
-    calculate_arithmetic_intensity,
     calculate_achieved_bandwidth,
     calculate_achieved_tflops,
+    calculate_arithmetic_intensity,
     calculate_bandwidth_utilization,
     calculate_compute_utilization,
+    calculate_flops_attention,
+    calculate_flops_ssm,
+    calculate_memory_bytes_attention,
+    calculate_memory_bytes_ssm,
+    get_gpu_specs,
 )
 
 

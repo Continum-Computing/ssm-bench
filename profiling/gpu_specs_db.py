@@ -17,7 +17,7 @@ picked up RTX 2080 Ti numbers and every T4 utilization percentage came
 out wrong.
 """
 
-from typing import Dict, NamedTuple, Optional
+from typing import NamedTuple
 
 
 class PeakSpecs(NamedTuple):

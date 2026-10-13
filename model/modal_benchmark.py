@@ -20,9 +20,9 @@ image = (
     timeout=3600,  # 1 hour timeout
 )
 def run_benchmarks():
+    import os
     import subprocess
     import sys
-    import os
     
     # Clone the repository
     subprocess.run([

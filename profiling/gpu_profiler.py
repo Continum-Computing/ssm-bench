@@ -11,11 +11,10 @@ This module provides tools for:
 All measurements are designed to be accurate and reproducible.
 """
 
-import torch
 import time
-from typing import Dict, List, Tuple, Optional
 from dataclasses import dataclass
-import json
+
+import torch
 
 from profiling.gpu_specs_db import lookup_peak_specs
 

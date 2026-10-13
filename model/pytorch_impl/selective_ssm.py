@@ -8,9 +8,8 @@ All functions should produce identical outputs to the NumPy reference when given
 the same inputs (verified by tests).
 """
 
+
 import torch
-import numpy as np
-from typing import Tuple
 
 
 def discretize_zoh(

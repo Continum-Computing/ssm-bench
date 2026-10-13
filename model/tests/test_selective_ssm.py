@@ -11,14 +11,13 @@ This is the ground truth that all future implementations (PyTorch, CUDA) must ma
 """
 
 import numpy as np
-import pytest
 from numpy.testing import assert_allclose
 
 from model.reference.selective_ssm import (
+    compute_delta,
     discretize_zoh,
     selective_ssm_recurrent,
     selective_ssm_scan,
-    compute_delta,
 )
 
 

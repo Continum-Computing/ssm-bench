@@ -6,23 +6,33 @@ profiling) produces identical outputs to the NumPy reference (which is the
 ground truth).
 """
 
-import torch
 import numpy as np
-import pytest
+import torch
 from numpy.testing import assert_allclose
 
-from model.reference.selective_ssm import (
-    discretize_zoh as discretize_zoh_numpy,
-    selective_ssm_recurrent as selective_ssm_recurrent_numpy,
-    selective_ssm_scan as selective_ssm_scan_numpy,
-    compute_delta as compute_delta_numpy,
+from model.pytorch_impl.selective_ssm import (
+    compute_delta as compute_delta_torch,
 )
-
 from model.pytorch_impl.selective_ssm import (
     discretize_zoh as discretize_zoh_torch,
+)
+from model.pytorch_impl.selective_ssm import (
     selective_ssm_recurrent as selective_ssm_recurrent_torch,
+)
+from model.pytorch_impl.selective_ssm import (
     selective_ssm_scan as selective_ssm_scan_torch,
-    compute_delta as compute_delta_torch,
+)
+from model.reference.selective_ssm import (
+    compute_delta as compute_delta_numpy,
+)
+from model.reference.selective_ssm import (
+    discretize_zoh as discretize_zoh_numpy,
+)
+from model.reference.selective_ssm import (
+    selective_ssm_recurrent as selective_ssm_recurrent_numpy,
+)
+from model.reference.selective_ssm import (
+    selective_ssm_scan as selective_ssm_scan_numpy,
 )
 
 
