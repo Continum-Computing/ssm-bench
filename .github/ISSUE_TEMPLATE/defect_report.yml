@@ -1,0 +1,65 @@
+name: Benchmark or methodology defect
+description: Report a wrong number, a broken reproduction path, or a claim the data does not support
+title: "[defect] "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for checking our work. This repository publishes numbers that drive a real engineering decision, so a correction is one of the most useful things you can file.
+
+        Past defects worth knowing about: peak specs were once keyed by compute capability, which scored a Tesla T4 against RTX 2080 Ti numbers, and one run's metadata summary block was populated with a different GPU's averages. Both were found by comparing published figures against the raw JSON. If you are doing the same, please say so below.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of defect is this?
+      options:
+        - A published number does not match the raw data
+        - A peak spec or denominator is wrong
+        - A claim the data does not support
+        - Reproduction steps do not work
+        - A script or plot is broken
+        - Something else
+    validations:
+      required: true
+  - type: input
+    id: location
+    attributes:
+      label: Where does it appear?
+      description: File path and section, table row, or line. Include the result set if it is a data issue.
+      placeholder: profiling/results/t4-colab-2026-10-10/metadata.json, summary.avg_ssm_recurrent_latency_ms
+    validations:
+      required: true
+  - type: textarea
+    id: claim
+    attributes:
+      label: What does it currently say?
+      description: Quote the figure or sentence exactly.
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: What is correct, and how do you know?
+      description: Show the arithmetic or the command that produces the right value. A recomputation from benchmark_results.json is ideal.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Where else does this figure appear?
+      description: The same number is usually repeated across the README, whitepaper, analysis document, and the project website. List every place you found it so the correction is complete.
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment, if relevant
+      description: GPU model, driver, CUDA, PyTorch version, git commit.
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: I checked this against the raw data in benchmark_results.json, not against another document
+          required: true
+        - label: I searched existing issues for this figure

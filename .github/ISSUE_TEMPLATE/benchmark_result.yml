@@ -1,0 +1,106 @@
+name: New benchmark result or baseline
+description: Contribute a measurement, a fused kernel baseline, or results on a GPU we have not covered
+title: "[result] "
+labels: ["benchmark", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please read [CONTRIBUTING.md](../../blob/main/CONTRIBUTING.md) first. The short version: correctness is checked against the NumPy reference before anything is timed, peaks come from `profiling/gpu_specs_db.py` rather than a literal, and measured values are never edited after commit.
+
+        Issues labelled `gate` are the work that unblocks the project's go/no-go decision, and are the highest-value contribution here.
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What are you contributing?
+      options:
+        - A strong baseline kernel (FlashAttention-2, Mamba CUDA kernels, fused block)
+        - Results on a GPU we have not benchmarked
+        - A new metric (energy, decode latency, throughput, memory footprint)
+        - A wider sweep (batch size, longer sequences, different precision)
+        - A correction or re-run of an existing result set
+    validations:
+      required: true
+  - type: input
+    id: issue
+    attributes:
+      label: Related issue
+      description: If this addresses an open issue, link it.
+      placeholder: "#12"
+  - type: input
+    id: gpu
+    attributes:
+      label: GPU
+      description: Exact model and memory configuration. Bandwidth differs between 40GB and 80GB cards.
+      placeholder: NVIDIA A100-SXM4-40GB
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Platform and access method
+      placeholder: Modal, Google Colab, local workstation
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Software versions
+      description: Driver, CUDA, PyTorch, and the version of every kernel library used. Results are not comparable without these.
+      render: shell
+      placeholder: |
+        driver: 550.x
+        cuda: 12.4
+        torch: 2.4.0+cu124
+        flash-attn: 2.6.3
+        mamba-ssm: 2.2.2
+    validations:
+      required: true
+  - type: textarea
+    id: config
+    attributes:
+      label: Benchmark configuration
+      description: Sequence lengths, state dimensions, batch size, dtype, warm-up and measured run counts.
+      render: python
+    validations:
+      required: true
+  - type: textarea
+    id: correctness
+    attributes:
+      label: Correctness check
+      description: How the implementation was validated against the reference, and the tolerance used. A baseline that has not been checked against the reference will not be merged.
+    validations:
+      required: true
+  - type: textarea
+    id: peaks
+    attributes:
+      label: Peaks used for utilization
+      description: Bandwidth and compute ceilings, the precision each corresponds to, and whether tensor rates are dense or sparse.
+      placeholder: 1555 GB/s, 312 TFLOP/s dense BF16 tensor
+    validations:
+      required: true
+  - type: textarea
+    id: results
+    attributes:
+      label: Headline results
+      description: Latency, achieved bandwidth, achieved TFLOP/s, arithmetic intensity. Include the spread, not just a central value.
+    validations:
+      required: true
+  - type: textarea
+    id: limits
+    attributes:
+      label: What these results do not show
+      description: Every result set in this repository states its own limits. What is this measurement not able to tell us?
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: Results are checked against the NumPy reference before timing
+        - label: Peaks come from gpu_specs_db.py, not a hardcoded literal
+        - label: I report median and P95 over at least 100 runs, with warm-up discarded
+        - label: Result files follow the naming convention and include metadata.json
+        - label: I have not edited any previously committed measurement
+          required: true
