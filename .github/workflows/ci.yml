@@ -1,0 +1,87 @@
+name: CI
+
+# Runs on pull requests and on pushes to main. Deliberately `pull_request` and
+# not `pull_request_target`: this repo takes fork PRs, and pull_request_target
+# would run untrusted code with access to repository secrets. Nothing here needs
+# a secret, and the read-only permissions block below keeps it that way.
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: "3.11"
+
+      # Kept in step with the ruff pin in pyproject.toml. Both must be bumped
+      # together or CI and local runs will judge the same code differently.
+      - name: Install ruff
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "ruff==0.17.0"
+
+      - name: Check lint rules
+        run: python -m ruff check .
+
+      # Covers fenced python blocks in Markdown as well as source files, because
+      # ruff format rewrites those too.
+      - name: Check formatting
+        run: python -m ruff format --check .
+
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12"]
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97  # v7.0.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      # GitHub-hosted runners have no NVIDIA GPU, and the default PyPI torch
+      # wheel pulls several gigabytes of CUDA libraries that cannot be used
+      # here. The correctness suite is CPU-only by design, so install the CPU
+      # build first and let the editable install below see it as satisfied.
+      - name: Install CPU-only PyTorch
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+
+      # Installs from pyproject.toml rather than a duplicated dependency list,
+      # so there is one source of truth. Also proves the packaging metadata
+      # still builds.
+      - name: Install the package with dev dependencies
+        run: python -m pip install -e ".[dev]"
+
+      # Invoked directly rather than through `make test`, because the Makefile
+      # hardcodes a POSIX virtualenv layout that does not exist on every
+      # runner. Tracked separately as issue #36.
+      - name: Run the correctness suite
+        run: python -m pytest
