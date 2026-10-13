@@ -42,15 +42,37 @@ Add an entry to `GPU_PEAK_SPECS` in `profiling/gpu_specs_db.py`, most specific n
 
 ## Running things
 
+These are the commands CI runs, and they work on any platform:
+
 ```bash
-make setup     # virtual environment and dependencies
-make test      # correctness tests, CPU only
-make lint
-python profiling/run_benchmarks.py    # needs an NVIDIA GPU
-python profiling/visualize.py profiling/results/<run>/benchmark_results.json
+python -m pip install -e ".[dev]"   # dependencies, including the pinned ruff
+python -m pytest                    # correctness tests, CPU only
+python -m ruff check .              # lint
+python -m ruff format --check .     # formatting
 ```
 
+`make setup`, `make test` and `make lint` also exist, but the Makefile hardcodes a POSIX virtualenv layout (`$(VENV)/bin`) and fails on Windows. Until #36 settles that, prefer the direct commands above, which is what CI uses.
+
+Two entry points in this file used to be documented as if they worked. They did not, so here is the honest version:
+
+- `python profiling/visualize.py <results.json>` exits 0 and writes nothing. The module has no `if __name__ == "__main__"` block and never imports argparse, so it cannot be run as a script. That is #48. Until it lands, call `generate_all_visualizations(results_path, run_dir)` from Python. It writes the four plots to `{run_dir}/plots/` and one `benchmark_summary.txt` to `{run_dir}/`.
+- `python profiling/run_benchmarks.py` does work, but needs an NVIDIA GPU.
+
+A silent no-op is worse than a crash, because you walk away believing the plots now exist. This is why the A100 result set has no plots or summary.
+
 CPU-only machines can run the correctness suite and the analysis tooling. GPU runs need Colab, Modal, or hardware you own; `model/modal_benchmark.py` is a worked example for Modal.
+
+## Continuous integration
+
+Every pull request and every push to `main` runs `.github/workflows/ci.yml`. Three checks report: `Lint`, `Test (Python 3.11)` and `Test (Python 3.12)`.
+
+Lint runs ruff 0.17.0. That version is pinned in two places, `pyproject.toml` and `ci.yml`, and both must be bumped together. Install with `pip install -e ".[dev]"` and your local run matches CI. A different ruff version can disagree with the gate, because ruff retunes rules between releases.
+
+One thing catches people out. `ruff format` also rewrites fenced `python` blocks inside Markdown, so editing a code example in a README can fail the lint job without touching a single `.py` file. Run `python -m ruff format .` before pushing and it will normalise the example for you.
+
+Tests run against CPU-only PyTorch, because GitHub-hosted runners have no NVIDIA GPU. Nothing in CI validates a performance claim, and no CI job currently reads `profiling/results/`. A green suite means the reference implementations agree with each other. It does not mean the published numbers are right. That gap is #27.
+
+`main` is protected. Changes arrive by pull request, and direct pushes are refused for maintainers too.
 
 ## Style
 
@@ -58,6 +80,7 @@ CPU-only machines can run the correctness suite and the analysis tooling. GPU ru
 - Say "custom processor", not "accelerator".
 - Numbers carry units and a denominator. Ratios say which direction they run: "SSM is 120x slower than attention", never "120x speedup" when the value is below one.
 - A claim that cannot be reproduced from a script and a metadata file does not belong in the docs.
+- Leave `A`, `B`, `C`, `D`, `A_bar` and `B_bar` in capitals. `N803` and `N806` are disabled in `pyproject.toml` precisely so those names keep the spelling they have in the state-space literature. Lowercasing them makes the reference implementations harder to read against the papers.
 
 ## Commits and pull requests
 
