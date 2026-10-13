@@ -27,7 +27,7 @@ def run_benchmarks():
     # Clone the repository
     subprocess.run([
         "git", "clone", 
-        "https://github.com/Continuum-Computiing/ssm-bench.git"
+        "https://github.com/Continum-Computing/ssm-bench.git"
     ], check=True)
     
     os.chdir("ssm-bench")
