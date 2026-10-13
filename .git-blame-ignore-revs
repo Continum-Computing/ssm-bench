@@ -1,0 +1,18 @@
+# Commits that are purely mechanical and should be skipped by git blame.
+#
+# GitHub's web UI honours this file automatically. To get the same behaviour
+# locally, run this once in your clone:
+#
+#     git config blame.ignoreRevsFile .git-blame-ignore-revs
+#
+# Add new entries at the bottom, one full SHA per line, with a comment above
+# each saying what the commit did. Only formatting and rename sweeps belong
+# here. A commit that changes behaviour must never be listed, because hiding
+# it would hide the reason a line looks the way it does.
+#
+# This file only works if the listed commits stay in history. Merging a branch
+# with a squash rewrite discards the original SHAs and breaks every entry, so
+# branches that touch this file need a merge commit.
+
+# style: apply ruff format across the codebase (12 files, no behaviour change)
+012dff7026fd6dd9802a7cc16eeee8dfb6ed42f9
