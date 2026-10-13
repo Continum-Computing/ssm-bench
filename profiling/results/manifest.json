@@ -34,7 +34,14 @@
       "key_findings": "Naive reference SSM is 543-2,382x slower than naive matmul attention. SSM uses 0.012-0.11% of the 1555 GB/s peak and 0.0004-0.002% of the 312 TFLOP/s BF16 tensor peak. The A100 is 1.22x faster than the T4 on SSM and 13.96x faster on attention.",
       "files": {
         "metadata": "metadata.json",
-        "raw_data": "benchmark_results.json"
+        "raw_data": "benchmark_results.json",
+        "summary": "benchmark_summary.txt",
+        "plots": [
+          "plots/latency_vs_seq_len.png",
+          "plots/bandwidth_utilization.png",
+          "plots/compute_utilization.png",
+          "plots/roofline_model.png"
+        ]
       }
     }
   ],

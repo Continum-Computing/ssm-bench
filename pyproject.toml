@@ -77,7 +77,7 @@ ignore = [
 known-first-party = ["model", "profiling", "configs"]
 
 [tool.pytest.ini_options]
-testpaths = ["model/tests"]
+testpaths = ["model/tests", "profiling/tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]

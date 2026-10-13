@@ -56,21 +56,23 @@ This decision is a gate, not a milestone. Everything downstream of it in the pri
 
 ### Visualizations
 
-**Latency scaling** - naive SSM vs naive attention across sequence lengths:
+Every chart below is from the Tesla T4 run `t4-colab-2026-10-10`, on Google Colab. The A100 run `a100-modal-2026-10-10` has the same four charts in its own `plots/` directory.
 
-![Latency vs sequence length](profiling/results/t4-colab-2026-10-10/plots/latency_vs_seq_len.png)
+**Latency scaling** - Tesla T4, `t4-colab-2026-10-10`. Naive SSM vs naive attention across sequence lengths:
 
-**Bandwidth utilization** - neither implementation comes close to the T4's 320 GB/s peak:
+![Latency vs sequence length, Tesla T4 run t4-colab-2026-10-10](profiling/results/t4-colab-2026-10-10/plots/latency_vs_seq_len.png)
 
-![Bandwidth utilization](profiling/results/t4-colab-2026-10-10/plots/bandwidth_utilization.png)
+**Bandwidth utilization** - Tesla T4, `t4-colab-2026-10-10`. Neither implementation comes close to the 320 GB/s peak:
 
-**Compute utilization** - at batch size 1 the GPU spends most of its time waiting between kernel launches:
+![Bandwidth utilization, Tesla T4 run t4-colab-2026-10-10](profiling/results/t4-colab-2026-10-10/plots/bandwidth_utilization.png)
 
-![Compute utilization](profiling/results/t4-colab-2026-10-10/plots/compute_utilization.png)
+**Compute utilization** - Tesla T4, `t4-colab-2026-10-10`. At batch size 1 the GPU spends most of its time waiting between kernel launches:
 
-**Roofline analysis** - where each kernel sits against the bandwidth and compute limits:
+![Compute utilization, Tesla T4 run t4-colab-2026-10-10](profiling/results/t4-colab-2026-10-10/plots/compute_utilization.png)
 
-![Roofline model](profiling/results/t4-colab-2026-10-10/plots/roofline_model.png)
+**Roofline analysis** - Tesla T4, `t4-colab-2026-10-10`. Where each kernel sits against the bandwidth and compute limits:
+
+![Roofline model, Tesla T4 run t4-colab-2026-10-10](profiling/results/t4-colab-2026-10-10/plots/roofline_model.png)
 
 ## What we measure
 
@@ -182,10 +184,10 @@ python profiling/run_benchmarks.py \
   --output profiling/results/my_benchmark.json
 ```
 
-Generate plots:
+Generate plots and a text summary from a stored run. No GPU needed:
 
 ```bash
-python profiling/visualize.py profiling/results/benchmark_results.json
+python profiling/visualize.py profiling/results/t4-colab-2026-10-10/benchmark_results.json
 ```
 
 ## Contributing

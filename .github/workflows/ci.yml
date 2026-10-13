@@ -76,9 +76,11 @@ jobs:
 
       # Installs from pyproject.toml rather than a duplicated dependency list,
       # so there is one source of truth. Also proves the packaging metadata
-      # still builds.
-      - name: Install the package with dev dependencies
-        run: python -m pip install -e ".[dev]"
+      # still builds. The profiling extra is included because matplotlib lives
+      # there and the visualization tests import it; this matches what
+      # `make setup` installs.
+      - name: Install the package with dev and profiling dependencies
+        run: python -m pip install -e ".[dev,profiling]"
 
       # Invoked directly rather than through `make test`, because the Makefile
       # hardcodes a POSIX virtualenv layout that does not exist on every

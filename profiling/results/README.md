@@ -19,7 +19,13 @@ profiling/results/
 │       └── roofline_model.png
 ├── a100-modal-2026-10-10/             # A100 results from Modal
 │   ├── metadata.json                   # GPU specs, software versions, config
-│   └── benchmark_results.json          # Raw benchmark data (36 configurations)
+│   ├── benchmark_results.json          # Raw benchmark data (36 configurations)
+│   ├── benchmark_summary.txt           # Human-readable summary
+│   └── plots/
+│       ├── latency_vs_seq_len.png
+│       ├── bandwidth_utilization.png
+│       ├── compute_utilization.png
+│       └── roofline_model.png
 └── analysis/
     └── gpu_comparison_t4_vs_a100.md    # Cross-GPU analysis document
 ```
@@ -116,9 +122,10 @@ python profiling/run_benchmarks.py \
 
 ```bash
 python profiling/visualize.py \
-  profiling/results/{gpu}-{platform}-{date}/benchmark_results.json \
-  --output-dir profiling/results/{gpu}-{platform}-{date}/plots/
+  profiling/results/{gpu}-{platform}-{date}/benchmark_results.json
 ```
+
+Writes into the directory holding that JSON: four PNGs under `plots/` and one `benchmark_summary.txt` beside it. Pass `--run-dir` to write somewhere else. No GPU is needed, since everything is recomputed from stored data.
 
 ### Running on Modal (Cloud GPU)
 
@@ -148,9 +155,10 @@ python model/modal_benchmark.py
 3. **Generate visualizations**:
    ```bash
    python profiling/visualize.py \
-     profiling/results/{gpu}-{platform}-{date}/benchmark_results.json \
-     --output-dir profiling/results/{gpu}-{platform}-{date}/plots/
+     profiling/results/{gpu}-{platform}-{date}/benchmark_results.json
    ```
+
+   Writes into that same directory, so the four PNGs land in `plots/` and `benchmark_summary.txt` beside them.
 
 4. **Create metadata.json**:
    - Extract metadata from `benchmark_results.json`

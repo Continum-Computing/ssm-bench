@@ -36,15 +36,17 @@ python profiling/run_benchmarks.py \
 ### Generate visualizations
 
 ```bash
-python profiling/visualize.py profiling/results/benchmark_results.json
+python profiling/visualize.py profiling/results/{gpu}-{platform}-{date}/benchmark_results.json
 ```
 
+Writes into the directory holding that JSON, so the usual case needs no second argument. Pass `--run-dir` to write elsewhere. No GPU required; everything is recomputed from stored data.
+
 Generates:
-- `latency_vs_seq_len.png` - latency scaling with sequence length
-- `bandwidth_utilization.png` - memory bandwidth utilization
-- `compute_utilization.png` - compute utilization
-- `roofline_model.png` - roofline analysis
-- `benchmark_summary.txt` - text summary report
+- `plots/latency_vs_seq_len.png` - latency scaling with sequence length
+- `plots/bandwidth_utilization.png` - memory bandwidth utilization
+- `plots/compute_utilization.png` - compute utilization
+- `plots/roofline_model.png` - roofline analysis
+- `benchmark_summary.txt` - text summary report, at run-directory level
 
 ## Implementations
 
@@ -126,18 +128,28 @@ BenchmarkConfig(
 
 ```
 profiling/
-├── __init__.py              # Package exports
-├── gpu_profiler.py          # Core profiling utilities
-├── benchmark_runner.py      # Benchmark orchestration
-├── run_benchmarks.py        # Main entry point
-├── visualize.py             # Visualization and reporting
-└── results/                 # Benchmark output directory
-    ├── benchmark_results.json
-    ├── latency_vs_seq_len.png
-    ├── bandwidth_utilization.png
-    ├── compute_utilization.png
-    ├── roofline_model.png
-    └── benchmark_summary.txt
+├── __init__.py               # Package exports
+├── gpu_profiler.py           # Core profiling utilities
+├── gpu_specs_db.py           # Datasheet peak specs, keyed by device name
+├── benchmark_runner.py       # Benchmark orchestration
+├── run_benchmarks.py         # Main entry point (needs a GPU)
+├── recompute_utilization.py  # Offline correction of derived fields
+├── visualize.py              # Plots and summary (no GPU needed)
+├── README.md                 # This file
+├── tests/                    # CLI and visualization tests
+└── results/                  # One directory per run
+    ├── manifest.json         # Index of all result sets
+    ├── README.md             # Layout and reproduction guide
+    ├── analysis/             # Cross-run analysis documents
+    └── {gpu}-{platform}-{date}/
+        ├── benchmark_results.json
+        ├── metadata.json
+        ├── benchmark_summary.txt
+        └── plots/
+            ├── latency_vs_seq_len.png
+            ├── bandwidth_utilization.png
+            ├── compute_utilization.png
+            └── roofline_model.png
 ```
 
 ## Requirements
