@@ -455,5 +455,5 @@ def load_benchmark_results(input_path: str) -> dict:
     Returns:
         Dictionary with metadata and results
     """
-    with open(input_path, "r") as f:
+    with open(input_path) as f:
         return json.load(f)

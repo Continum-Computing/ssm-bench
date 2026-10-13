@@ -45,7 +45,7 @@ def run_benchmarks():
     ], check=True)
     
     # Read the results
-    with open("modal_benchmark_results.json", "r") as f:
+    with open("modal_benchmark_results.json") as f:
         results = f.read()
     
     return results
